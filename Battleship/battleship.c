@@ -210,7 +210,7 @@ char getSpace(COORDINATE* where, char grid[WIDTH][WIDTH])
 	int rowIndex = where->row - MIN_ROW;
 	return grid[colIndex][rowIndex];
 }
-
+//Kyle is a bool and has claimed this one....
 bool validSpace(COORDINATE* where)
 {
 	if(where->column<MIN_COL) return error("Too far West!\n");
