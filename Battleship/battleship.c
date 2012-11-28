@@ -382,3 +382,4 @@ void printCoord(COORDINATE* where)
 	printf("[%c%d]", where->column, where->row);
 }
 
+//Prof A typed this
