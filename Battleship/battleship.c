@@ -88,7 +88,7 @@ int main(void)
 	return 0;
 }
 
-int runGame(void)
+void runGame(void)
 {
 	//Players (hits, boards)
 	PLAYER player1;
