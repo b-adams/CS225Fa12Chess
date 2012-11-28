@@ -118,6 +118,7 @@ int runGame(void)
 			printf("Player 2 triumphs!\n"); break;
 		default: printf("The Bermuda Triangle strikes again...");
 	}
+    //(jbrutscher)
 }
 
 void resetPlayer(PLAYER *whom)//int* hits, char board[WIDTH][WIDTH], char view[WIDTH][WIDTH])
@@ -134,7 +135,7 @@ void resetPlayer(PLAYER *whom)//int* hits, char board[WIDTH][WIDTH], char view[W
 	}
 	
 }
-
+//******************** I'm Here ******************************
 bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom)
 {
 	int dist;
@@ -210,7 +211,7 @@ char getSpace(COORDINATE* where, char grid[WIDTH][WIDTH])
 	int rowIndex = where->row - MIN_ROW;
 	return grid[colIndex][rowIndex];
 }
-
+//******************** But I'm Not Here **********************
 bool validSpace(COORDINATE* where)
 {
 	if(where->column<MIN_COL) return error("Too far West!\n");
@@ -384,3 +385,4 @@ void printCoord(COORDINATE* where)
 	printf("[%c%d]", where->column, where->row);
 }
 
+//Prof A typed this
