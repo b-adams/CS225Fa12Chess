@@ -12,12 +12,11 @@ const char MAX_COL = 'H';
 const int MIN_ROW = 1;
 const int MAX_ROW = 8;
 
-const int WIDTH=8;
 
 
 typedef struct {
- 	char board[WIDTH][WIDTH];
- 	char view[WIDTH][WIDTH];
+ 	char board[8][8];
+ 	char view[8][8];
  	int hits;
 } PLAYER;
 
@@ -55,7 +54,7 @@ const int GAME_OVER_PLR2_WINS = 2;
 
 
 void printCoord(COORDINATE* where);
-void printGrid(char grid[WIDTH][WIDTH]);
+void printGrid(char grid[8][8]);
 
 void resetPlayer(PLAYER* whom);
 void setupPlayer(PLAYER* plr);
@@ -67,8 +66,8 @@ void copyCoord(COORDINATE* original, COORDINATE* copy);
 void moveCoord(COORDINATE* where, int distance, char direction);
 
 bool validSpace(COORDINATE* where);
-void setSpace(COORDINATE* where, char grid[WIDTH][WIDTH], char symbol);
-char getSpace(COORDINATE* where, char grid[WIDTH][WIDTH]);
+void setSpace(COORDINATE* where, char grid[8][8], char symbol);
+char getSpace(COORDINATE* where, char grid[8][8]);
 
 void setWater(COORDINATE* where, PLAYER* whom);
 void setShip(COORDINATE* where, PLAYER* whom);
@@ -121,13 +120,13 @@ void runGame(void)
     //(jbrutscher)
 }
 
-void resetPlayer(PLAYER *whom)//int* hits, char board[WIDTH][WIDTH], char view[WIDTH][WIDTH])
+void resetPlayer(PLAYER *whom)//int* hits, char board[8][8], char view[8][8])
 {
 	whom->hits = 0;
 	COORDINATE target;
-	for(int r=0; r<WIDTH; r++)
+	for(int r=0; r<8; r++)
 	{
-		for(int c=0; c<WIDTH; c++)
+		for(int c=0; c<8; c++)
 		{
 			setCoord(&target, c, r);
 			setWater(&target, whom);
@@ -197,14 +196,14 @@ bool checkForHit(COORDINATE* where, PLAYER* whom)
 	}
 }
 
-void setSpace(COORDINATE* where, char grid[WIDTH][WIDTH], char symbol)
+void setSpace(COORDINATE* where, char grid[8][8], char symbol)
 {
     int colIndex = where->column - MIN_COL;
 	int rowIndex = where->row - MIN_ROW;
 	grid[colIndex][rowIndex] = symbol;
 }
 
-char getSpace(COORDINATE* where, char grid[WIDTH][WIDTH])
+char getSpace(COORDINATE* where, char grid[8][8])
 {
 	if(!validSpace(where)) return GRID_BAD;
 	int colIndex = where->column - MIN_COL;
@@ -245,13 +244,13 @@ bool error(char* message)
 	return false;
 }
 
-void printGrid(char grid[WIDTH][WIDTH])
+void printGrid(char grid[8][8])
 {
 	COORDINATE target;
 	char symbol;
-	for(int r=-1; r<WIDTH; r++)
+	for(int r=-1; r<8; r++)
 	{
-		for(int c=-1; c<WIDTH; c++)
+		for(int c=-1; c<8; c++)
 		{
 			if(r>=0 && c>=0)
 			{
