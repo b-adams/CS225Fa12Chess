@@ -277,6 +277,8 @@ void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
 
 	printGrid(plr->board);
 
+    //THE END IS MINE -DR EVIL (KEEGAN)
+    
 	while(!placed)
 	{
 		printf("Where is the front of your %s? ", shipName);
