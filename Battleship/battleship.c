@@ -52,7 +52,7 @@ const int GAME_OVER_TIE = -1;
 const int GAME_OVER_PLR1_WINS = 1;
 const int GAME_OVER_PLR2_WINS = 2;
 
-
+//Dauris Little 
 
 void printCoord(COORDINATE* where);
 void printGrid(char grid[WIDTH][WIDTH]);
