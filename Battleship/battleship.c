@@ -118,6 +118,7 @@ int runGame(void)
 			printf("Player 2 triumphs!\n"); break;
 		default: printf("The Bermuda Triangle strikes again...");
 	}
+    //(jbrutscher)
 }
 
 void resetPlayer(PLAYER *whom)//int* hits, char board[WIDTH][WIDTH], char view[WIDTH][WIDTH])
