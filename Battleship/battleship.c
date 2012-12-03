@@ -51,8 +51,6 @@ const int GAME_OVER_PLR1_WINS = 1;
 const int GAME_OVER_PLR2_WINS = 2;// Kyle Steere to here for const
 //************* End Of Section of .Equates ******************
 
-//Dauris Little 
-
 void printCoord(COORDINATE* where);//Dauris
 void printGrid(char grid[8][8]);//Dauris
 
@@ -117,7 +115,6 @@ void runGame(void)
 			printf("Player 2 triumphs!\n"); break;
 		default: printf("The Bermuda Triangle strikes again...");
 	}
-    //(jbrutscher)
 }
 
 void resetPlayer(PLAYER *whom)//int* hits, char board[8][8], char view[8][8])
@@ -134,7 +131,7 @@ void resetPlayer(PLAYER *whom)//int* hits, char board[8][8], char view[8][8])
 	}
 	
 }
-//******************** I'm Here ******************************
+
 bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom)
 {
 	int dist;
@@ -210,7 +207,6 @@ char getSpace(COORDINATE* where, char grid[8][8])
 	int rowIndex = where->row - MIN_ROW;
 	return grid[colIndex][rowIndex];
 }
-//******************** But I'm Not Here **********************
 
 bool validSpace(COORDINATE* where)
 {
@@ -278,8 +274,6 @@ void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
 
 	printGrid(plr->board);
 
-    //THE END IS MINE -DR EVIL (KEEGAN)
-    
 	while(!placed)
 	{
 		printf("Where is the front of your %s? ", shipName);
@@ -384,5 +378,3 @@ void printCoord(COORDINATE* where)
 {
 	printf("[%c%d]", where->column, where->row);
 }
-
-//Prof A typed this
