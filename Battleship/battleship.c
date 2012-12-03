@@ -6,7 +6,7 @@ typedef struct {
 	char column;
 	int row;
 } COORDINATE;
-
+//************* Start Of Section of .Equates ******************
 const char MIN_COL = 'A';
 const char MAX_COL = 'H';
 const int MIN_ROW = 1;
@@ -51,7 +51,7 @@ const int GAME_NOT_OVER = 0;
 const int GAME_OVER_TIE = -1;
 const int GAME_OVER_PLR1_WINS = 1;
 const int GAME_OVER_PLR2_WINS = 2;
-
+//************* End Of Section of .Equates ******************
 
 
 void printCoord(COORDINATE* where);
