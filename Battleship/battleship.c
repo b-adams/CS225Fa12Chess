@@ -6,7 +6,7 @@ typedef struct { //Dauris
 	char column;
 	int row;
 } COORDINATE;
-
+//************* Start Of Section of .Equates ******************
 const char MIN_COL = 'A';//Kyle Steere From here for const
 const char MAX_COL = 'H';
 const int MIN_ROW = 1;
@@ -49,6 +49,7 @@ const int GAME_NOT_OVER = 0;
 const int GAME_OVER_TIE = -1;
 const int GAME_OVER_PLR1_WINS = 1;
 const int GAME_OVER_PLR2_WINS = 2;// Kyle Steere to here for const
+//************* End Of Section of .Equates ******************
 
 //Dauris Little 
 
@@ -62,22 +63,22 @@ void interactivePlaceShip(PLAYER *plr, char* shipName, int size);
 void inputCoord(COORDINATE* target);
 void setCoord(COORDINATE* where, int r, int c);//Keegan
 void copyCoord(COORDINATE* original, COORDINATE* copy);
-void moveCoord(COORDINATE* where, int distance, char direction);
+void moveCoord(COORDINATE* where, int distance, char direction);//Constance
 
 bool validSpace(COORDINATE* where);//Kyle Steere
 void setSpace(COORDINATE* where, char grid[8][8], char symbol);
-char getSpace(COORDINATE* where, char grid[8][8]);
+char getSpace(COORDINATE* where, char grid[8][8]);//Constance
 
 void setWater(COORDINATE* where, PLAYER* whom);//Kyle Steere 
 void setShip(COORDINATE* where, PLAYER* whom);//Kyle Steere
-bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
+bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom); //Constance
 
 bool error(char* message);//Kyle Steere
 
 void runGame(void); //Keegan
-void playLoop(PLAYER* plr1, PLAYER* plr2);
+void playLoop(PLAYER* plr1, PLAYER* plr2); //Constance
 void executeRound(PLAYER* plr1, PLAYER* plr2);
-bool checkForHit(COORDINATE* where, PLAYER* whom);
+bool checkForHit(COORDINATE* where, PLAYER* whom); //Constance
 int checkGameOver(PLAYER* plr1, PLAYER* plr2); //Keegan
 
 int main(void)
