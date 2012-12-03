@@ -2,23 +2,21 @@
 #include <stdbool.h>
 #include <ctype.h> //for toupper
 
-typedef struct {
+typedef struct { //Dauris
 	char column;
 	int row;
-} COORDINATE;
-
-const char MIN_COL = 'A';
-const char MAX_COL = 'H';
-const int MIN_ROW = 1;
-const int MAX_ROW = 8;
-
-
+} COORDINATE; //Dauris 1
 
 typedef struct {
  	char board[8][8];
  	char view[8][8];
  	int hits;
-} PLAYER;
+} PLAYER; //Dauris 1
+
+const char MIN_COL = 'A'; //Kyle (Constants)
+const char MAX_COL = 'H';
+const int MIN_ROW = 1;
+const int MAX_ROW = 8;
 
 const char DIR_NONE='x';
 const char DIR_NORTH='n';
@@ -53,35 +51,35 @@ const int GAME_OVER_PLR2_WINS = 2;
 
 //Dauris Little 
 
-void printCoord(COORDINATE* where);
-void printGrid(char grid[8][8]);
+void printCoord(COORDINATE* where); //Dauris 3
+void printGrid(char grid[8][8]); //Dauris 2
 
-void resetPlayer(PLAYER* whom);
-void setupPlayer(PLAYER* plr);
-void interactivePlaceShip(PLAYER *plr, char* shipName, int size);
+void resetPlayer(PLAYER* whom); //Keegan 4
+void setupPlayer(PLAYER* plr); //Keegan 3
+void interactivePlaceShip(PLAYER *plr, char* shipName, int size); //Josh A
 
-void inputCoord(COORDINATE* target);
-void setCoord(COORDINATE* where, int r, int c);
-void copyCoord(COORDINATE* original, COORDINATE* copy);
-void moveCoord(COORDINATE* where, int distance, char direction);
+void inputCoord(COORDINATE* target); //Josh B
+void setCoord(COORDINATE* where, int r, int c); //Keegan 5
+void copyCoord(COORDINATE* original, COORDINATE* copy); //Josh C
+void moveCoord(COORDINATE* where, int distance, char direction); //Constance 5
 
-bool validSpace(COORDINATE* where);
-void setSpace(COORDINATE* where, char grid[8][8], char symbol);
-char getSpace(COORDINATE* where, char grid[8][8]);
+bool validSpace(COORDINATE* where); //Kyle 4
+void setSpace(COORDINATE* where, char grid[8][8], char symbol); //Dauris 5
+char getSpace(COORDINATE* where, char grid[8][8]); //Constance 2
 
-void setWater(COORDINATE* where, PLAYER* whom);
-void setShip(COORDINATE* where, PLAYER* whom);
-bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
+void setWater(COORDINATE* where, PLAYER* whom); //Kyle 2
+void setShip(COORDINATE* where, PLAYER* whom); //Kyle 3
+bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom); //Constance 1
 
-bool error(char* message);
+bool error(char* message); //Kyle 5
 
-void runGame(void);
-void playLoop(PLAYER* plr1, PLAYER* plr2);
-void executeRound(PLAYER* plr1, PLAYER* plr2);
-bool checkForHit(COORDINATE* where, PLAYER* whom);
-int checkGameOver(PLAYER* plr1, PLAYER* plr2);
+void runGame(void); //Kyle 2
+void playLoop(PLAYER* plr1, PLAYER* plr2); //Constance 4
+void executeRound(PLAYER* plr1, PLAYER* plr2); //Josh C
+bool checkForHit(COORDINATE* where, PLAYER* whom); //Constance 3
+int checkGameOver(PLAYER* plr1, PLAYER* plr2); //Keegan 1
 
-int main(void)
+int main(void) //Dauris 4
 {
 	runGame();
 	return 0;
