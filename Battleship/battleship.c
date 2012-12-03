@@ -55,12 +55,12 @@ const int GAME_OVER_PLR2_WINS = 2;// Kyle Steere to here for const
 void printCoord(COORDINATE* where);
 void printGrid(char grid[8][8]);
 
-void resetPlayer(PLAYER* whom);
-void setupPlayer(PLAYER* plr);
+void resetPlayer(PLAYER* whom);//Keegan
+void setupPlayer(PLAYER* plr);//Keegan
 void interactivePlaceShip(PLAYER *plr, char* shipName, int size);
 
 void inputCoord(COORDINATE* target);
-void setCoord(COORDINATE* where, int r, int c);
+void setCoord(COORDINATE* where, int r, int c);//Keegan
 void copyCoord(COORDINATE* original, COORDINATE* copy);
 void moveCoord(COORDINATE* where, int distance, char direction);
 
@@ -74,11 +74,11 @@ bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
 
 bool error(char* message);//Kyle Steere
 
-void runGame(void);
+void runGame(void); //Keegan
 void playLoop(PLAYER* plr1, PLAYER* plr2);
 void executeRound(PLAYER* plr1, PLAYER* plr2);
 bool checkForHit(COORDINATE* where, PLAYER* whom);
-int checkGameOver(PLAYER* plr1, PLAYER* plr2);
+int checkGameOver(PLAYER* plr1, PLAYER* plr2); //Keegan
 
 int main(void)
 {
@@ -210,8 +210,7 @@ char getSpace(COORDINATE* where, char grid[8][8])
 	return grid[colIndex][rowIndex];
 }
 //******************** But I'm Not Here **********************
-//Kyle is a bool and has claimed this one....
->>>>>>> upstream/master
+
 bool validSpace(COORDINATE* where)
 {
 	if(where->column<MIN_COL) return error("Too far West!\n");
