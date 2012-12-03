@@ -65,22 +65,22 @@ void interactivePlaceShip(PLAYER *plr, char* shipName, int size);
 void inputCoord(COORDINATE* target);
 void setCoord(COORDINATE* where, int r, int c);
 void copyCoord(COORDINATE* original, COORDINATE* copy);
-void moveCoord(COORDINATE* where, int distance, char direction);
+void moveCoord(COORDINATE* where, int distance, char direction);//Constance
 
 bool validSpace(COORDINATE* where);
 void setSpace(COORDINATE* where, char grid[8][8], char symbol);
-char getSpace(COORDINATE* where, char grid[8][8]);
+char getSpace(COORDINATE* where, char grid[8][8]);//Constance
 
 void setWater(COORDINATE* where, PLAYER* whom);
 void setShip(COORDINATE* where, PLAYER* whom);
-bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
+bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);//Constance
 
 bool error(char* message);
 
 void runGame(void);
-void playLoop(PLAYER* plr1, PLAYER* plr2);
+void playLoop(PLAYER* plr1, PLAYER* plr2);//Constance
 void executeRound(PLAYER* plr1, PLAYER* plr2);
-bool checkForHit(COORDINATE* where, PLAYER* whom);
+bool checkForHit(COORDINATE* where, PLAYER* whom);//Constance
 int checkGameOver(PLAYER* plr1, PLAYER* plr2);
 
 int main(void)
