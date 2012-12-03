@@ -55,7 +55,7 @@ const int GAME_OVER_PLR2_WINS = 2;
 
 
 void printCoord(COORDINATE* where);
-void printGrid(char grid[WIDTH][WIDTH]);
+void printGrid(char grid[WIDTH][WIDTH]); //might not need sthis 
 
 void resetPlayer(PLAYER* whom);
 void setupPlayer(PLAYER* plr);
@@ -87,7 +87,7 @@ int main(void)
 	runGame();
 	return 0;
 }
-
+//Keegan Claims this as his #2 choice
 int runGame(void)
 {
 	//Players (hits, boards)
@@ -164,7 +164,7 @@ bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom)
 	}
 	return true; //Success!
 }
-
+//Keegan Claims this as his #3 choice.
 void setWater(COORDINATE* where, PLAYER* whom)
 {
 	setSpace(where, whom->board, BOARD_WATER);
@@ -211,7 +211,7 @@ char getSpace(COORDINATE* where, char grid[WIDTH][WIDTH])
 	int rowIndex = where->row - MIN_ROW;
 	return grid[colIndex][rowIndex];
 }
-//******************** But I'm Not Here **********************
+//Keegan Claims this as his #4choice
 bool validSpace(COORDINATE* where)
 {
 	if(where->column<MIN_COL) return error("Too far West!\n");
@@ -316,7 +316,7 @@ void setupPlayer(PLAYER* plr)
 
 	printf("Done setting up.\n");
 }
-
+//Keegan Claims this as his #1 Choice
 int checkGameOver(PLAYER* plr1, PLAYER* plr2)
 {
 	if(plr1->hits < 1) return GAME_OVER_PLR2_WINS;
