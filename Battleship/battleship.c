@@ -7,11 +7,10 @@ typedef struct {
 	int row;
 } COORDINATE;
 
-const char MIN_COL = 'A';
+const char MIN_COL = 'A';//Kyle Steere From here for const
 const char MAX_COL = 'H';
 const int MIN_ROW = 1;
 const int MAX_ROW = 8;
-
 
 
 typedef struct {
@@ -49,7 +48,7 @@ const int BOAT_CARRIER = 5;
 const int GAME_NOT_OVER = 0;
 const int GAME_OVER_TIE = -1;
 const int GAME_OVER_PLR1_WINS = 1;
-const int GAME_OVER_PLR2_WINS = 2;
+const int GAME_OVER_PLR2_WINS = 2;// Kyle Steere to here for const
 
 //Dauris Little 
 
@@ -65,15 +64,15 @@ void setCoord(COORDINATE* where, int r, int c);
 void copyCoord(COORDINATE* original, COORDINATE* copy);
 void moveCoord(COORDINATE* where, int distance, char direction);
 
-bool validSpace(COORDINATE* where);
+bool validSpace(COORDINATE* where);//Kyle Steere
 void setSpace(COORDINATE* where, char grid[8][8], char symbol);
 char getSpace(COORDINATE* where, char grid[8][8]);
 
-void setWater(COORDINATE* where, PLAYER* whom);
-void setShip(COORDINATE* where, PLAYER* whom);
+void setWater(COORDINATE* where, PLAYER* whom);//Kyle Steere 
+void setShip(COORDINATE* where, PLAYER* whom);//Kyle Steere
 bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
 
-bool error(char* message);
+bool error(char* message);//Kyle Steere
 
 void runGame(void);
 void playLoop(PLAYER* plr1, PLAYER* plr2);
