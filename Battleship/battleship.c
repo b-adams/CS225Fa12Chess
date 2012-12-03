@@ -2,10 +2,11 @@
 #include <stdbool.h>
 #include <ctype.h> //for toupper
 
-typedef struct { //Dauris
+typedef struct {
 	char column;
 	int row;
-} COORDINATE;
+} COORDINATE;//Dauris
+
 //************* Start Of Section of .Equates ******************
 const char MIN_COL = 'A';//Kyle Steere From here for const
 const char MAX_COL = 'H';
@@ -17,7 +18,7 @@ typedef struct {
  	char board[8][8];
  	char view[8][8];
  	int hits;
-} PLAYER;
+} PLAYER;//Dauris 
 
 const char DIR_NONE='x';
 const char DIR_NORTH='n';
@@ -53,8 +54,8 @@ const int GAME_OVER_PLR2_WINS = 2;// Kyle Steere to here for const
 
 //Dauris Little 
 
-void printCoord(COORDINATE* where);
-void printGrid(char grid[8][8]);
+void printCoord(COORDINATE* where);//Dauris
+void printGrid(char grid[8][8]);//Dauris
 
 void resetPlayer(PLAYER* whom);//Keegan
 void setupPlayer(PLAYER* plr);//Keegan
@@ -66,12 +67,12 @@ void copyCoord(COORDINATE* original, COORDINATE* copy);
 void moveCoord(COORDINATE* where, int distance, char direction);//Constance
 
 bool validSpace(COORDINATE* where);//Kyle Steere
-void setSpace(COORDINATE* where, char grid[8][8], char symbol);
+void setSpace(COORDINATE* where, char grid[8][8], char symbol);//Dauris
 char getSpace(COORDINATE* where, char grid[8][8]);//Constance
 
 void setWater(COORDINATE* where, PLAYER* whom);//Kyle Steere 
 void setShip(COORDINATE* where, PLAYER* whom);//Kyle Steere
-bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom); //Constance
+bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);//Constance
 
 bool error(char* message);//Kyle Steere
 
@@ -81,7 +82,7 @@ void executeRound(PLAYER* plr1, PLAYER* plr2);
 bool checkForHit(COORDINATE* where, PLAYER* whom); //Constance
 int checkGameOver(PLAYER* plr1, PLAYER* plr2); //Keegan
 
-int main(void)
+int main(void)//dauris
 {
 	runGame();
 	return 0;
