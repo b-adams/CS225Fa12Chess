@@ -5,7 +5,7 @@
 typedef struct {
 	char column;
 	int row;
-} COORDINATE;
+} COORDINATE;//Dauris
 
 const char MIN_COL = 'A';
 const char MAX_COL = 'H';
@@ -18,7 +18,7 @@ typedef struct {
  	char board[8][8];
  	char view[8][8];
  	int hits;
-} PLAYER;
+} PLAYER;//Dauris 
 
 const char DIR_NONE='x';
 const char DIR_NORTH='n';
@@ -53,8 +53,8 @@ const int GAME_OVER_PLR2_WINS = 2;
 
 //Dauris Little 
 
-void printCoord(COORDINATE* where);
-void printGrid(char grid[8][8]);
+void printCoord(COORDINATE* where);//Dauris
+void printGrid(char grid[8][8]);//Dauris
 
 void resetPlayer(PLAYER* whom);
 void setupPlayer(PLAYER* plr);
@@ -66,12 +66,12 @@ void copyCoord(COORDINATE* original, COORDINATE* copy);
 void moveCoord(COORDINATE* where, int distance, char direction);
 
 bool validSpace(COORDINATE* where);
-void setSpace(COORDINATE* where, char grid[8][8], char symbol);
+void setSpace(COORDINATE* where, char grid[8][8], char symbol);//Dauris
 char getSpace(COORDINATE* where, char grid[8][8]);
 
 void setWater(COORDINATE* where, PLAYER* whom);
 void setShip(COORDINATE* where, PLAYER* whom);
-bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);
+bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);//Constance
 
 bool error(char* message);
 
@@ -81,7 +81,7 @@ void executeRound(PLAYER* plr1, PLAYER* plr2);
 bool checkForHit(COORDINATE* where, PLAYER* whom);
 int checkGameOver(PLAYER* plr1, PLAYER* plr2);
 
-int main(void)
+int main(void)//dauris
 {
 	runGame();
 	return 0;
@@ -92,21 +92,21 @@ void runGame(void)
 	//Players (hits, boards)
 	PLAYER player1;
 	PLAYER player2;
-
+    
 	printf("\t\tWelcome to Shooting Boats!\n\n\n");
-
+    
 	printf("Setting up player 1\n");
 	setupPlayer(&player1); printf("\n\n\n\n\n\n\n\n");
-
+    
 	printf("Setting up player 2\n");
 	setupPlayer(&player2); printf("\n\n\n\n\n\n\n\n");
-
+    
 	printf("\t\tTime to play!\n");
-
+    
 	playLoop(&player1, &player2);
-
+    
 	printf("\t\tThe game is over!\n");
-
+    
 	switch(checkGameOver(&player1, &player2))
 	{
 		case GAME_OVER_TIE:
@@ -152,10 +152,10 @@ bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom)
 		moveCoord(&target, 1, direction);
 		dist++;
 	}
-
+    
 	//Clear for placement!
 	whom->hits += size; //Keep track of remaining hits
-
+    
 	//Place ship bits
 	for(dist=0, copyCoord(where, &target); dist<size; dist++, moveCoord(&target, 1, direction))
 	{
@@ -275,9 +275,9 @@ void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
 	COORDINATE target;
 	char direction;
 	bool placed=false;
-
+    
 	printGrid(plr->board);
-
+    
     //THE END IS MINE -DR EVIL (KEEGAN)
     
 	while(!placed)
@@ -295,12 +295,12 @@ void setupPlayer(PLAYER* plr)
 	COORDINATE target;
 	char direction;
 	char ok = 'n';
-
+    
 	while(ok=='n')
 	{
-
+        
 		resetPlayer(plr);
-	
+        
 		interactivePlaceShip(plr, "Carrier", BOAT_CARRIER);
 		interactivePlaceShip(plr, "Battleship", BOAT_BATTLESHIP);
 		interactivePlaceShip(plr, "Destroyer", BOAT_DESTROYER);
@@ -308,12 +308,12 @@ void setupPlayer(PLAYER* plr)
 		interactivePlaceShip(plr, "Patrol Boat", BOAT_PT);
 		
 		printGrid(plr->board);
-	
+        
 		printf("Is this setup ok? [y/n] ");
 		scanf(" %c", &ok);
 	}
-
-
+    
+    
 	printf("Done setting up.\n");
 }
 
@@ -340,20 +340,20 @@ void executeRound(PLAYER* plr1, PLAYER* plr2)
 	COORDINATE target;
 	bool plr1hits;
 	bool plr2hits;
-
-
+    
+    
 	printGrid(plr2->view);
 	printf("Player 1: Enter target! ");
 	inputCoord(&target);
 	plr1hits = checkForHit(&target, plr2);
-
+    
 	printGrid(plr1->view);
 	printf("Player 2: Enter target! ");
 	inputCoord(&target);
 	plr2hits = checkForHit(&target, plr1);
-
+    
 	printf("\n\nSHELLS IN THE AIR!\n\n");
-
+    
 	printf("Player 1... ");
 	if(plr1hits)
 	{
@@ -362,7 +362,7 @@ void executeRound(PLAYER* plr1, PLAYER* plr2)
 	} else {
 		printf("misses.\n");
 	}
-
+    
 	printf("Player 2... ");
 	if(plr2hits)
 	{
