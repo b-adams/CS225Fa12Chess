@@ -1,5 +1,6 @@
 ; Adams Stuff begins
-
+CALL main
+STOP
 ; Adams Stuff ends
 
 
@@ -27,3 +28,4 @@
 
 ; Little Stuff ends
 
+.END
