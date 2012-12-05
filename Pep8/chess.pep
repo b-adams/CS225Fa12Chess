@@ -41,9 +41,11 @@ coord: .Equate 5 ;local variable #drection #distance #where
 mvCoord: NOP0
 SUBSP coord,i ;allocating #drection #distance #where
 ;?
-LDX drection,i
-CPA DIR_NORTH,i
-BRNE ;someplace....(Not North...)
+;LDX row,i Dauris choses row name...
+; sxf
+;LDX drection,i
+;CPA DIR_NORTH,i
+;BRNE ;someplace....(Not North...)
 
 ;?
 ADDSP coord,i ;deallocating #where #distance #drection
