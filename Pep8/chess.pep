@@ -33,22 +33,28 @@ STOP
   ;	if(direction==DIR_WEST) where->column -= distance;
   ;	if(direction==DIR_EAST) where->column += distance;
   ;}
-where: .Equate 0 ;struct field #2h
-distance: .Equate 2 ;struct field #2d
-drection: .Equate 4 ;struct field #1c
-coord: .Equate 5 ;local variable #drection #distance #where
-   ;Making a Coordinate as a single concept/object/structure
+prompt: .ASCII "What direction would you like to place the tail of the ship?"
+
+where: .Equate 0 ;local variable #2h
+distance: .Equate 2 ;local variable #2d
+drection: .Equate 4 ;local variable #1c
+mvCoord: .Equate 5 ;stack size of #drection #distance #where
+   ;Coordinate as a single concept/object/structure?
 mvCoord: NOP0
-SUBSP coord,i ;allocating #drection #distance #where
+SUBSP mvCoord,i ;allocating #drection #distance #where
 ;?
-;LDX row,i Dauris choses row name...
-; sxf
+LDX row,i
+STX drection,sxf
+LDA drection,s
+CPX DIR_NOTH,d
+
+;sxf
 ;LDX drection,i
 ;CPA DIR_NORTH,i
 ;BRNE ;someplace....(Not North...)
 
 ;?
-ADDSP coord,i ;deallocating #where #distance #drection
+ADDSP mvCoord,i ;deallocating #where #distance #drection
 
 ;const int MIN_ROW = 1;
 ;const char MIN_COL = 'A';
