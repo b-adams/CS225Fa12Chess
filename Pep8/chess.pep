@@ -20,6 +20,7 @@ STOP
 
 
 ;---------------LeBerth Stuff begins-------------
+;******************************************************************
 ;const char DIR_NONE='x';
 ;const char DIR_NORTH='n';
 ;const char DIR_EAST='e';
@@ -33,21 +34,85 @@ STOP
   ;	if(direction==DIR_WEST) where->column -= distance;
   ;	if(direction==DIR_EAST) where->column += distance;
   ;}
+prompt: .ASCII "Where would you like place the tail of the ship?"
+oops: .ASCII "Can't be placed there..."
+
 where: .Equate 0 ;struct field #2h
 distance: .Equate 2 ;struct field #2d
 drection: .Equate 4 ;struct field #1c
-coord: .Equate 5 ;local variable #drection #distance #where
-   ;Making a Coordinate as a single concept/object/structure
-mvCoord: NOP0
-SUBSP coord,i ;allocating #drection #distance #where
-;?
-LDX drection,i
-CPA DIR_NORTH,i
-BRNE ;someplace....(Not North...)
+mvCoord: .Equate 5 ;local variable #drection #distance #where
+   
+movCoord: NOP0
+SUBSP mvCoord,i ;allocating #drection #distance #where
+LDA 1,i
+STA distance,s
+STRO prompt,i
+CHARO drection,s
+LDA drection,s ;if drection..
+CPA DIR_NORTH,s ;is equal to 'n'
+BREQ north ;place it north
+CPA DIR_SOUTH,i ;is equal to 's'
+BREQ south ;place it south
+CPA DIR_EAST,i ;is equal to 'e'
+BREQ east ;place it east
+CPA DIR_WEST,i ;is equal to 'w'
+BREQ west ;place it west
+CPA DIR_NONE ;is equal to none
+BR none ;it is one point
+BR retry ;is equal to no valid choice...
 
-;?
-ADDSP coord,i ;deallocating #where #distance #drection
+north: NOP0 ;where->row -= distance
+LDX row,i
+STX where,sxf
+LDA where,sxf
+SUBA distance,s
+STA where,sxf
+LDX where,sxf
+STX row,i
+BR placed
 
+south: NOP0 ;where->row += distance
+LDX row,i
+STX where,sxf
+LDA where,sxf
+ADDA distance,s
+STA where,sxf
+LDX where,sxf
+STX row,i
+BR placed
+
+east: NOP0 ;where->column += distance
+LDX column,i
+STX where,sxf
+LDA where,sxf
+ADDA distance,s
+STA where,sxf
+LDX where,sxf
+STX column,i
+BR placed
+
+west: NOP0 ;where->column -= distance
+LDX column,i
+STX where,sxf
+LDA where,sxf
+SUBA distance,s
+STA where,sxf
+LDX where,sxf
+STX column,i
+BR placed
+
+none: NOP0
+BR placed
+
+retry: NOP0
+STRO oops,i
+BR movCoord
+
+placed: NOP0
+ADDSP mvCoord,i ;deallocating #where #distance #drection
+RET0
+;*****************************************************************
+;*****************************************************************
 ;const int MIN_ROW = 1;
 ;const char MIN_COL = 'A';
 ;const char GRID_BAD = '?';
@@ -58,7 +123,28 @@ ADDSP coord,i ;deallocating #where #distance #drection
   ;	int rowIndex = where->row - MIN_ROW;
   ;	return grid[colIndex][rowIndex];
   ;}
+where: .Equate 0 ;local variable #2h
+grid: .Equate 2 ;local array #1c2a
+gtSpace: .Equate 4 ;size of stack of #grid #where
 
+getSpace: NOP0
+SUBSP gtSpace,i ;allocating #grid #where
+LDX column,i
+STX where,sxf
+LDA where,sxf
+SUBA MIN_COL,i
+STA grid,sx ;should be first variable in grid?? And should Store BYTE!
+LDX row,i
+STX where,sxf
+LDA where,sxf
+SUBA MIN_ROW ;row is an integer.... column is a character..... ??!!
+LDX 3,i ;Maybe useful in shifting from grid[colIndex] to grid[rowIndex]??
+STA grid,sx ;Should store byte!! STBYTE?
+
+
+ADDSP gtSpace,i ;deallocating #where #grid
+;****************************************************************
+;****************************************************************
 ;const char BOARD_WATER = '~';
 ;***bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);***
   ;{
