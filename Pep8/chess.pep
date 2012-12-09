@@ -141,12 +141,30 @@ setCoord: NOP0
 ; Brutscher Stuff begins
 ;-------------------------------------------------------------------------------;
 intPlShp: NOP0 ;void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
+Br iPlShpSt
+;DETERMINE VARIABLES AND NAMES
+JBpsVplc: .equate 0 ;bool placed (=false) ;local variable #1h
+JBpsVdir: .equate  1 ;char direction ;local variable #1c
+;JBpsVsze: .equate 2 ; int size ;local variable #2d ; I don't actually see this declared, but I'm gonna' use it, so do I declare this or not?
+;because size is going to come from one of Kyle's Constants, but what ultimately points to them or calls them here? I might figure this out once I get further.
+;Oh wait...it's not a variable at all. It's a parameter.
+JBpsVtrg: .equate 4 ;COORDINATE target ;local structure #row #col
+;(Frame = [42] + 2 = 44)
+
+;DETERMINE FORMAL PARAMETERS AND (CALLEE) NAMES
+JBpsPplr: .equate 46 ;PLAYER *plr ;local parameter #2h
+JBpsPspn: .equate 47 ;char *shipName ;local parameter #1c
+JBpsPsze: .equate 49 ;int size ;local param #2d
+
+
 ;{
 ;	COORDINATE target;
 ;	char direction;
 ;	bool placed=false;
+iPlShpSt: NOP0
 ;
 ;	printGrid(plr->board);
+
 ;
 ;	while(!placed)
 ;	{
@@ -169,7 +187,7 @@ JBerVp2h: .equate 1 ;bool plr2hits ;local variable #1h ;check the trace tags
 ;not sure if I gave myself enough space for bools or what we're using for them
 ;but my instinct tells me that it's best to keep bools at 1 byte (1 nyyble would be nicer if we could load it)
 ;I need to figure out a more clever way to work with bools
-JBerVtrg: .equate 3 ;COORDINATE target ;local structer #row #col
+JBerVtrg: .equate 3 ;COORDINATE target ;local structure #row #col
 ;for some reason the translation example tells me that COORDINATE is 42 bytes
 ;that means that there are 44 bytes in this frame theoretically, yes?
 
@@ -218,7 +236,7 @@ JBerStrt: NOP0 ;Now we get down to business
 
 	STRO JBerSg1, d ;printf(''Player 1
 	STRO JBerSg2, d ;: Enter target! '');
-            ;inputCoord(&target);
+           ;inputCoord(&target);
 	;plr1hits = checkForHit(&target, plr2);
 	;printGrid(plr1->view);
            STRO JBerSg3, d ; printf(''Player 2
