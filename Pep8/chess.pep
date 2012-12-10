@@ -5,7 +5,7 @@ STOP
 
 
 ; Steere Stuff begins
-MIN_COL: .equate 'A'; Minimum column 
+MIN_COL: .equate 'A'; Minimum column
 MAX_COL: .equate 'H'; Maximum column
 MIN_ROW: .equate 1; Minimum Row
 MAX_ROW: .equate 8; Maximum Row
@@ -139,34 +139,45 @@ setCoord: NOP0
 
 
 ; Brutscher Stuff begins
+;-------------------------------------------------------------------------------;
 intPlShp: NOP0 ;void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
-direc: .BLOCK 1 ;make into NOT GLOBAL later 
-placed: .EQUATE 0 ;yeah again...
+Br iPlShpSt
+;DETERMINE VARIABLES AND NAMES
+JBpsVplc: .equate 0 ;bool placed (=false) ;local variable #1h
+JBpsVdir: .equate  1 ;char direction ;local variable #1c
+;JBpsVsze: .equate 2 ; int size ;local variable #2d ; I don't actually see this declared, but I'm gonna' use it, so do I declare this or not?
+;because size is going to come from one of Kyle's Constants, but what ultimately points to them or calls them here? I might figure this out once I get further.
+;Oh wait...it's not a variable at all. It's a parameter.
+JBpsVtrg: .equate 4 ;COORDINATE target ;local structure #row #col
+;(Frame = [42] + 2 = 44)
+
+;DETERMINE FORMAL PARAMETERS AND (CALLEE) NAMES
+JBpsPplr: .equate 46 ;PLAYER *plr ;local parameter #2h
+JBpsPspn: .equate 47 ;char *shipName ;local parameter #1c
+JBpsPsze: .equate 49 ;int size ;local param #2d
+
+
 ;{
-         ;COORDINATE target
-         LDA target, d  ;(check addressing mode)/(It's not going to be a global)
-         STA COORDINATE, x; (check addressing mode)
-         ;char direction
-                             
-         ;bool placed = false;
-                             
-         
-         ;printGrid(plr->board);
-       
-         CALL printGrid, x ;(I need to do more here)
-         
-         ;while (!placed)
-         
-         ;{
-                 
+;	COORDINATE target;
+;	char direction;
+;	bool placed=false;
+iPlShpSt: NOP0
+;
+;	printGrid(plr->board);
 
-
-
-
-
+;
+;	while(!placed)
+;	{
+;		printf("Where is the front of your %s? ", shipName);
+;		inputCoord(&target);
+;		printf("Which direction is the rest of it? (n,e,w,s):");
+;		scanf(" %c", &direction);
+;		placed = placeShip(size, &target, direction, plr);
+;	}
+;}
 RET0
 
-
+;-------------------------------------------------------------------------------;
 extRound: NOP0 ;void executeRound(PLAYER* plr1, PLAYER* plr2)
 BR JBerStrt ;skipping my variables and parameters and calle(e/r) names and strings and such
 
@@ -176,7 +187,7 @@ JBerVp2h: .equate 1 ;bool plr2hits ;local variable #1h ;check the trace tags
 ;not sure if I gave myself enough space for bools or what we're using for them
 ;but my instinct tells me that it's best to keep bools at 1 byte (1 nyyble would be nicer if we could load it)
 ;I need to figure out a more clever way to work with bools
-JBerVtrg: .equate 3 ;COORDINATE target ;local structer #row #col
+JBerVtrg: .equate 3 ;COORDINATE target ;local structure #row #col
 ;for some reason the translation example tells me that COORDINATE is 42 bytes
 ;that means that there are 44 bytes in this frame theoretically, yes?
 
@@ -185,8 +196,8 @@ JBerPpl1: .equate 46 ;PLAYER* plr1 ;local parameter #2h
 JBerPpl2: .equate 48 ;PLAYER* plr2 ;local parameter #2h
 
 ;NOW FOR THE CALL(ER) NAMES (ARGS)
-JBerApl1: .equate -2 ;PLAYER* plr1 ;function argument
-JBerApl2: .equate -4 ;PLAYER* plr2 ;function argument
+JBerApl1: .equate -4 ;PLAYER* plr1 ;function argument
+JBerApl2: .equate -2 ;PLAYER* plr2 ;function argument
 
 ;FRAMES
 JBerifrm: .equate 44 ;internal frame size for plr1hits, plr2hits, target
@@ -207,53 +218,83 @@ JBerSg9: .ASCII "misses.\n\x00"
 
 JBerStrt: NOP0 ;Now we get down to business
 ;{
-;	COORDINATE target;
-;	bool plr1hits;
-;	bool plr2hits;
-;
-;
-;	printGrid(plr2->view);
-;	printf("Player 1: Enter target! ");
-;	inputCoord(&target);
-;	plr1hits = checkForHit(&target, plr2);
-;
-;	printGrid(plr1->view);
-;	printf("Player 2: Enter target! ");
-;	inputCoord(&target);
-;	plr2hits = checkForHit(&target, plr1);
-;
-;	printf("\n\nSHELLS IN THE AIR!\n\n");
-;
-;	printf("Player 1... ");
-;	if(plr1hits)
-;	{
-;		printf("Player 2... ");
-;		printf("Player %d can take %d more hits.\n", 2, plr2->hits);		
-;	} else {
-;		printf("misses.\n");
-;	}
-;
-;	printf("Player 2... ");
-;	if(plr2hits)
-;	{
-;		printf("hits!\n");
-;		printf("Player %d can take %d more hits.\n", 1, plr1->hits);
-;	} else {
-;		printf("misses.\n");
-;	}
+; I think that this line takes care of itself; COORDINATE target;
+;And this one; bool plr1hits;
+;And probably this one too; bool plr2hits;
+
+
+	;printGrid(plr2->view);
+           LDX DLview, i ;waiting on Dauris to name this, Actually I don't even believe this is the first step here
+           STA JBerPpl2, x ;again this might be it and might not be it. I'm still following the translation example pretty closely
+           LDA JBerPpl2, s
+           STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
+           SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
+           CALL DLprntGrd ;Call to placeholder name
+           ADDSP DLpgXFRM ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+
+         
+
+	STRO JBerSg1, d ;printf(''Player 1
+	STRO JBerSg2, d ;: Enter target! '');
+           ;inputCoord(&target);
+	;plr1hits = checkForHit(&target, plr2);
+	;printGrid(plr1->view);
+           STRO JBerSg3, d ; printf(''Player 2
+           STRO JBerSg2, d;: Enter target! '');
+	;inputCoord(&target);
+	;plr2hits = checkForHit(&target, plr1);
+
+	STRO JBerSg4, d ;printf(''\n\nSHELLS IN THE AIR!\n\n'');
+
+	STRO JBerSg1, d ;printf(''Player 1
+            STRO JBerSg5, d ;... '');
+	;if(plr1hits)
+	;{
+	STRO JBerSg6, d ;printf(''hits!\n'');The Original line says printf(''Player 2...''), but I think this should be printf(''hits!'') ;printf(''Player 2... '');
+		STRO JBerSg3, d ;printf("Player %d 
+                       STRO JBerSg7, d      ;can take 
+                       ;DECO something?      ;%d 
+                             
+                       STRO JBerSg8, d                   ;more hits.\n", 2, plr2->hits);		
+	;} else {
+		STRO JBerSg9, d ;printf("misses.\n");
+	;}
+
+	STRO JBerSg3, d ;printf("Player 2
+           STRO JBerSg5, d  ;... ");
+	;if(plr2hits)
+	;{
+		;printf("hits!\n");
+                       STRO JBerSg1, d ;printf("Player %d 
+                       STRO JBerSg7, d      ;can take 
+                       ;DECO something?      ;%d 
+                             
+                       STRO JBerSg8, d                   ;more hits.\n", 1, plr1->hits);		
+	;} else {
+		STRO JBerSg9, d ;printf("misses.\n");
+	;}
 ;}
 RET0
 
 
+;-------------------------------------------------------------------------------;
 inpCoord: NOP0 ;void inputCoord(COORDINATE* target)
 
+;{
+;	scanf(" %c%d", &(target->column), &(target->row));
+;	target->column = toupper(target->column);
+;	printf("Target entered: "); printCoord(target); printf("\n");
+;}
 RET0
 
-
+;-------------------------------------------------------------------------------;
 cpyCoord: NOP0 ;void copyCoord(COORDINATE* original, COORDINATE* copy)
-
+;{
+;	copy->column = original->column;
+;	copy->row = original->row;
+;}
 RET0
-
+;-------------------------------------------------------------------------------;
 
 ; Brutscher Stuff ends
 
