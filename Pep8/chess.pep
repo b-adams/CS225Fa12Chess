@@ -189,7 +189,8 @@ JBipswhl: NOP0 ;call this for while loop
 		;printf("Which direction is the rest of it? (n,e,w,s):");
                  	;scanf(" %c", &direction);
 		;placed = placeShip(size, &target, direction, plr);
-;	}
+;         }
+BRNE iPlSpEnd ;check to see if the placed value has been set to NOT FALSE
 BR JBipswhl
 
 ;}
