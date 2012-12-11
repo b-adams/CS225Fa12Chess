@@ -374,18 +374,18 @@ RET0
 prompt: .ASCII "Where would you like place the tail of the ship?"
 oops: .ASCII "Can't be placed there..."
 
-where: .Equate 0 ;struct field #2h
-distance: .Equate 2 ;struct field #2d
-drection: .Equate 4 ;struct field #1c
-mvCoord: .Equate 5 ;local variable #drection #distance #where
+CLmcwhr: .Equate 0 ;struct field #DLColumn #DLrow
+CLmcdist: .Equate 3 ;struct field #2d
+CLmcdrec: .Equate 5 ;struct field #1c
+CLmvCrdF: .Equate 6 ;local variable #drection #distance #where
    
-movCoord: NOP0
-SUBSP mvCoord,i ;allocating #drection #distance #where
+CLmvCord: NOP0
+SUBSP CLmvCrdF,i ;allocating #drection #distance #where
 LDA 1,i
-STA distance,s
+STA CLmcdist,s
 STRO prompt,i
-CHARO drection,s
-LDA drection,s ;if drection..
+CHARO CLmcdrec,s
+LDA CLmcdrec,s ;if drection..
 CPA DIR_NORT,s ;is equal to 'n'
 BREQ north ;place it north
 CPA DIR_STH,i ;is equal to 's'
@@ -399,43 +399,43 @@ BR none ;it is one point
 BR retry ;is equal to no valid choice...
 
 north: NOP0 ;where->row -= distance
-LDX row,i
-STX where,sxf
-LDA where,sxf
+LDX DLrow,i
+STX CLmcwhr,sxf
+LDA CLmcwhr,sxf
 SUBA distance,s
-STA where,sxf
-LDX where,sxf
-STX row,i
+STA CLmcwhr,sxf
+LDX CLmcwhr,sxf
+STX DLrow,i
 BR placed
 
 south: NOP0 ;where->row += distance
-LDX row,i
-STX where,sxf
-LDA where,sxf
-ADDA distance,s
-STA where,sxf
-LDX where,sxf
-STX row,i
+LDX DLrow,i
+STX CLmcwhr,sxf
+LDA CLmcwhr,sxf
+ADDA CLmcdist,s
+STA CLmcwhr,sxf
+LDX CLmcwhr,sxf
+STX DLrow,i
 BR placed
 
 east: NOP0 ;where->column += distance
-LDX column,i
-STX where,sxf
-LDA where,sxf
-ADDA distance,s
-STA where,sxf
-LDX where,sxf
-STX column,i
+LDX DLcolumn,i
+STX CLmcwhr,sxf
+LDA CLmcwhr,sxf
+ADDA CLmcdist,s
+STA CLmcwhr,sxf
+LDX CLmcwhr,sxf
+STX DLcolumn,i
 BR placed
 
 west: NOP0 ;where->column -= distance
-LDX column,i
-STX where,sxf
-LDA where,sxf
-SUBA distance,s
-STA where,sxf
-LDX where,sxf
-STX column,i
+LDX DLcolumn,i
+STX CLmcwhr,sxf
+LDA CLmcwhr,sxf
+SUBA CLmcdist,s
+STA CLmcwhr,sxf
+LDX CLmcwhr,sxf
+STX DLcolumn,i
 BR placed
 
 none: NOP0
@@ -443,10 +443,10 @@ BR placed
 
 retry: NOP0
 STRO oops,i
-BR movCoord
+BR CLmvCord
 
 placed: NOP0
-ADDSP mvCoord,i ;deallocating #where #distance #drection
+ADDSP CLmvCrdF,i ;deallocating #where #distance #drection
 RET0
 ;*****************************************************************
 ;*****************************************************************
@@ -461,26 +461,26 @@ RET0
   ;	return grid[colIndex][rowIndex];
   ;}
 
-where: .Equate 0 ;local variable #column #row
-grid: .Equate 3 ;local array #1c2a
-gtSpace: .Equate 5 ;size of stack of #grid #where
+CLgswhr: .Equate 0 ;local variable #column #row
+CLgsgrid: .Equate 3 ;local array #1c2a
+CLgsF: .Equate 5 ;size of stack of #grid #where
 
-getSpace: NOP0
-SUBSP gtSpace,i ;allocating #grid #where
-LDX column,i
-STX where,sxf
-LDA where,sxf
+CLgtSpac: NOP0
+SUBSP CLgsF,i ;allocating #grid #where
+LDX DLcolumn,i
+STX CLgswhr,sxf
+LDA CLgswhr,sxf
 SUBA MIN_COL,i
-STA grid,sx ;should be first variable in grid?? And should Store BYTE!
-LDX row,i
-STX where,sxf
-LDA where,sxf
+STA CLgsgrid,sx ;should be first variable in grid?? And should Store BYTE!
+LDX DLrow,i
+STX CLgswhr,sxf
+LDA CLgswhr,sxf
 SUBA MIN_ROW ;row is an integer.... column is a character..... ??!!
 LDX 3,i ;Maybe useful in shifting from grid[colIndex] to grid[rowIndex]??
-STA grid,sx ;Should store byte!! STBYTE?
+STA CLgsgrid,sx ;Should store byte!! STBYTE?
 
 
-ADDSP gtSpace,i ;deallocating #where #grid
+ADDSP CLgsF,i ;deallocating #where #grid
 ;****************************************************************
 ;****************************************************************
 ;const char BOARD_WATER = '~';
@@ -513,18 +513,28 @@ ADDSP gtSpace,i ;deallocating #where #grid
   ;	return true; //Success!
   ;}
 
-size: .Equate 0 ;local variable #2d
-target: .Equate 2 ;local variable #column #row
-drection: .Equate 5;local variable #1c
-whom: .Equate 6 ;local variable #2h
-plcShip: .Equate 8 ;size of stack of #whom #drection #where #size
+CLpsAsiz: .Equate -8 ;formal arguement #2d
+CLpsAdre: .Equate -6;formal arguement #1c
+CLpsAwhr: .Equate -5 ;formal arguement #2h
+CLpsAwho: .Equate -3 ;formal arguement #2h
+CLspORtV: .Equate -1 ;formal return value #1d
+CLcaleeF: .Equate 8 ;size of #CLpsAsiz #CLpsAdre #CLpsAwhr #CLpsAwho #CLspORtV
 
-placShip: NOP0
-SUBSP plcShip,i ;allocating #whom #drection #where #size
+CLpsdist: .Equate 0 ;local variable #2d
+CLpstarg: .Equate 2 ;local variable #DLcolumn #DLrow
+CLpsF: .Equate 5 ;size of stack of #CLpstarg #CLpsdist
+CLpsPsiz: .Equate 7 ;formal perameter #2d
+CLpsPdre: .Equate 9 ;formal perameter #1c
+CLpsPwhr: .Equate 10 ;formal perameter #2h
+CLpsPwho: .Equate 12 ;formal perameter #2h
+CLspRetV: .Equate 14 ;formal return value #1d
+
+CLplcShp: NOP0
+SUBSP CLpsF,i ;allocating #CLpstarg #CLpsdist
 
 
 
-ADDSP plcShip,i ;deallocating #size #where #drection #whom
+ADDSP CLpsF,i ;deallocating #CLpsdist #CLpstarg
 ;****************************************************************
 ;****************************************************************
 ;const int GAME_NOT_OVER = 0;
@@ -539,6 +549,35 @@ ADDSP plcShip,i ;deallocating #size #where #drection #whom
   ;	}
   ;}
 
+CLplEnGm: .Equate 0 ;local variable #2d
+CLplF: .Equate 2 ;size of stack of #endGame
+
+CLplAPy1: .Equate 0 ;local variable #2h
+CLplAPy2: .Equate 2 ;local variable #2h
+CLcaleeF: .Equate 4 ;size of stack of #CLplAPy2 #CLplAPy1
+
+playLoop: NOP0
+SUBSP CLplF,i ;allocating #endGame
+LDA GAME_NOT_OVER,d
+STA CLplEnGm,s
+
+start: NOP0
+LDA CLplEnGm,s
+CPA GAME_NOT_OVER,d
+BRNE end
+BR play
+
+play: NOP0
+SUBSP CLcaleeF,i ;allocating #lopPlyr2 #lopPlyr1
+CALL extRound
+ADDSP CLcaleeF,i ;deallocating #lopPlyr1 #lopPlyr2
+BR start
+
+end: NOP0
+ADDSP CLplF,i ;deallocating #endGame
+RET0
+;****************************************************************
+;****************************************************************
 ;const char BOARD_WATER = '~';
 ;const char BOARD_SHIP = '#';
 ;const char GRID_BAD = '?';
