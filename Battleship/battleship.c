@@ -193,7 +193,7 @@ bool checkForHit(COORDINATE* where, PLAYER* whom)
 	}
 }
 
-void setSpace(COORDINATE* where, char grid[8][8], char symbol)
+void setSpace(COORDINATE* where, char grid[8][8], char symbol)//Dauris
 {
     int colIndex = where->column - MIN_COL;
 	int rowIndex = where->row - MIN_ROW;
@@ -241,7 +241,7 @@ bool error(char* message)
 	return false;
 }
 
-void printGrid(char grid[8][8])
+void printGrid(char grid[8][8])//Dauris
 {
 	COORDINATE target;
 	char symbol;
@@ -374,7 +374,7 @@ void inputCoord(COORDINATE* target)
 	printf("Target entered: "); printCoord(target); printf("\n");
 }
 
-void printCoord(COORDINATE* where)
+void printCoord(COORDINATE* where)//Dauris
 {
 	printf("[%c%d]", where->column, where->row);
 }
