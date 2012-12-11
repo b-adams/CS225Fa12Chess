@@ -141,7 +141,7 @@ setCoord: NOP0
 ; Brutscher Stuff begins
 ;-------------------------------------------------------------------------------;
 intPlShp: NOP0 ;void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
-Br iPlShpSt
+Br iPlSpSt
 ;DETERMINE VARIABLES AND NAMES
 JBpsVplc: .equate 0 ;bool placed (=false) ;local variable #1h
 JBpsVdir: .equate  1 ;char direction ;local variable #1c
@@ -156,25 +156,42 @@ JBpsPplr: .equate 46 ;PLAYER *plr ;local parameter #2h
 JBpsPspn: .equate 47 ;char *shipName ;local parameter #1c
 JBpsPsze: .equate 49 ;int size ;local param #2d
 
+;DETERMINE ARGUMENTS/(CALLER) NAMES
+JBpsAsze: .equate -2 ;arg int size #2d
+JBpsAspn: .equate -3 ;arg char *shipName #1c
+JBpsAplr: .equate -5 ;arg PLAYER *plr #2h 
+
+;FRAMES
+JBpsifrm: .equate 44
+JBpsXFRM: .equate 5
+
+;STRINGS
+JBpsSg1: .ASCII "Where is the front of your \x00"
+JBpsSg2: .ASCII "? \n\x00"
+JBpsSg3: .ASCII "Which direction is the rest of it? (n,e,w,s): \x00"
 
 ;{
 ;	COORDINATE target;
 ;	char direction;
 ;	bool placed=false;
-iPlShpSt: NOP0
+iPlSpSt: NOP0
 ;
 ;	printGrid(plr->board);
 
-;
+
 ;	while(!placed)
 ;	{
-;		printf("Where is the front of your %s? ", shipName);
-;		inputCoord(&target);
-;		printf("Which direction is the rest of it? (n,e,w,s):");
-;		scanf(" %c", &direction);
-;		placed = placeShip(size, &target, direction, plr);
+		STRO JBpsSg1, d ;printf(''Where is the front of your 
+                                      ;%s[...], shipName);
+                       STRO JBpsSg2   ;? \n''
+                       
+		;inputCoord(&target);
+		;printf("Which direction is the rest of it? (n,e,w,s):");
+                 	;scanf(" %c", &direction);
+		;placed = placeShip(size, &target, direction, plr);
 ;	}
 ;}
+iPlSpEnd:NOP0
 RET0
 
 ;-------------------------------------------------------------------------------;
@@ -225,8 +242,8 @@ JBerStrt: NOP0 ;Now we get down to business
 
 	;printGrid(plr2->view)
            LDX DLview, i ;waiting on Dauris to name this, Actually I don't even believe this is the first step here
-           STA JBerPpl2, x ;again this might be it and might not be it. I'm still following the translation example pretty closely
-           LDA JBerPpl2, s
+           LDA JBerPpl2, x ;again this might be it and might not be it. I'm still following the translation example pretty closely
+           ;LDA JBerPpl2, s
            STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
            SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
            CALL DLprntGrd ;Call to placeholder name
@@ -241,7 +258,7 @@ JBerStrt: NOP0 ;Now we get down to business
            ;inputCoord(&target)
            ;prepare target as an argument
            MOVSPA
-           ADDA target, i
+           ADDA JBerAtrg, i
            STA JBicAtrg, s
            ;Allocate, call, and deallocate
            SUBSP JBicXFRM ;Allocate by amount #IMnotSURE
@@ -249,78 +266,134 @@ JBerStrt: NOP0 ;Now we get down to business
            ADDSP JBicXFRM ;Deallocate by amount #IMnotSURE
            ;END INPUTCOORD (&target)
            
-	;plr1hits = checkForHit(&target, plr2)
-
-           
-           ;
+	;plr1hits = checkForHit(&target, plr2) ;Delocalized args are checkForHit(COORDINATE*where, PLAYER* whom);
+            ;prepare arg (plr2)
+            LDA JBerApl2, s
+            STA CLcfhApl, s ;Store to placeholder name for PLAYER* whom arg in checkForHit
+            ;DONE LOADING PLR2 ARG
+            ;prepare arg (&target)
+             MOVSPA
+             ADDA JBerAtrg, i
+             STA CLcfhAwh, i
+            ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
+             ;Allocate/Deallocate and Call
+             SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
+             CALL checkHit ;Call to placeholder name
+             ADDSP CLchXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+             STA JBerVp1h, s ;store the returned value in bool player1hits 
+            ;END PLR1HITS = CHECKFORHIT(&TARGET, PLR2)
             
 	;printGrid(plr1->view)
-
-
-           ;
+            LDX DLview, i ;using placeholder name for view
+            LDA JBerPpl1, x
+            STA DLpgAgrd, s ;using placeholder name for grid arg of printgrid func.
+            SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
+            CALL DLprntGrd ;Call to placeholder name
+            ADDSP DLpgXFRM ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+            ;END PRINTGRID(plr1->view)
 
            STRO JBerSg3, d ; printf(''Player 2
            STRO JBerSg2, d;: Enter target! '');
 	
            ;inputCoord(&target)
            MOVSPA
-           ADDA target, i
+           ADDA JBerAtrg, i
            STA JBicAtrg, s
            ;Allocate, call, and deallocate
            SUBSP JBicXFRM ;Allocate by amount #IMnotSURE
            CALL inpCoord ;call inputCoordinate    ;I'm assuming that this is where we ACTUALLY enter our target
            ADDSP JBicXFRM ;Deallocate by amount #IMnotSURE
-
            ;END INPUTCOORD(&target)
 
 
-	;plr2hits = checkForHit(&target, plr1);
+	;plr2hits = checkForHit(&target, plr1);prepare arg (plr2)
+            LDA JBerApl1, s
+            STA CLcfhApl, s ;Store to placeholder name for PLAYER* whom arg in checkForHit
+            ;DONE LOADING PLR2 ARG
+            ;prepare arg (&target)
+             MOVSPA
+             ADDA JBerAtrg, i
+             STA CLcfhAwh, i
+            ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
+             ;Allocate/Deallocate and Call
+             SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
+             CALL checkHit ;Call to placeholder name
+             ADDSP CLchXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+             STA JBerVp2h, s ;store the returned value to bool plr2hits
+           ;END PLR2HITS =  CHECKFORHIT(&TARGET, PLR1)
+;spider-senses tell me that these lines require more messing with the index. I might not be doing these right since I'm all in the accumulator
+            
 
-	STRO JBerSg4, d ;printf(''\n\nSHELLS IN THE AIR!\n\n'');
-
-	STRO JBerSg1, d ;printf(''Player 1
+	 STRO JBerSg4, d ;printf(''\n\nSHELLS IN THE AIR!\n\n'');
+	 STRO JBerSg1, d ;printf(''Player 1
             STRO JBerSg5, d ;... '');
+            
+            ;IF PLAYER 1 HITS
 	JBerp1ht: NOP0;if(plr1hits)
+            ;LOAD plr1hits from stack
+             LDA JBerVp1h, s
+            ;OKAY NOW FINISH YOUR IF LOOP
+
+
+
             CPA 1, i ; compare accumulator to true
             BRNE JBerp1ms ;if not true jump to else loop
 	;{
 	STRO JBerSg6, d ;printf(''hits!\n'');The Original line says printf(''Player 2...''), but I think this should be printf(''hits!'') ;printf(''Player 2... '');
 		STRO JBerSg3, d ;printf("Player %d 
                        STRO JBerSg7, d      ;can take 
-                       ;DECO something?      ;%d 
+                       ;DECO something?      ;%d [...], plr2->hits);
                              
                        STRO JBerSg8, d                   ;more hits.\n", 2, plr2->hits);
-           BR JBerp2ht ;branch to next if loop            		
+            BR JBerp2ht ;branch to next if loop
+           ;END IF PLAYER 1 HITS
+
+           ;ELSE (PLAYER 1 MISSES)            		
 	;} else {
             JBerp1ms: NOP0 ;initiate else loop
-;do some things inside the else loop
+                      ;LDA ;**************************************SOMETHING OR OTHER **********************************************************
+                      ;CPA 0, i ;error checking
+                      ;BRNE JBerROR ;error checking
 		STRO JBerSg9, d ;printf(''misses.\n'');
 	;}
-           CPA 0, i ;error checking
-           BRNE JBerROR ;error checking
+           ;END ELSE (PLAYER 1 MISSES)
+
+
+          JBerp2ht: NOP0
 	STRO JBerSg3, d ;printf("Player 2
            STRO JBerSg5, d  ;... ")
-           BR JBerp2ht ;branch to next if loop
-	JBerp2ht: NOP0;if(plr2hits)
+           ;LOAD VALUE OF PLAYER2HITS FROM STACK
+           LDA JBerVp2h, s
+           ;DONE LOADING PLAYER2HITS...DO CONTINUE...
+           
+           ;IF PLAYER 2 HITS
+           ;if(plr2hits)
            CPA 1, i ;compare accumulator to true (1)
            BRNE JBerp2ms ;if not true jump to else condition
 	;{
 		STRO JBerSg6, d;printf(''hits!\n'');
                        STRO JBerSg1, d ;printf("Player %d 
                        STRO JBerSg7, d      ;can take 
-                       ;DECO something?      ;%d 
+                       ;DECO something?      ;%d[...], plr1->hits);
                              
-                       STRO JBerSg8, d ;more hits.\n", 1, plr1->hits);
-                       BR JBerEND ;jump to return		
+                       STRO JBerSg8, d ;more hits.\n''
+                       BR JBerEND ;jump to return
+           ;FINISH IF PLAYER 2 HITS
+
+           ;START ELSE (PLAYER 2 MISSES)		
 	JBerp2ms: NOP0;} else {
-           CPA 0, i ;error checking
-           BRNE JBerROR ;error checking
-	STRO JBerSg9, d ;printf(''misses.\n'');
+           ;LDA ;**************************************SOMETHING OR OTHER **********************************************************
+           ;CPA 0, i ;error checking
+           ;BRNE JBerROR ;error checking
+           STRO JBerSg9, d ;printf(''misses.\n'');
            BR JBerEND
+           ;END ELSE (PLAYER 2 MISSES)
+
+
 	;}
-         JBerROR: NOP0
-         STRO "Houston we have a problem!\n\x00" ;Error checking of my own doing. Poor form, but will be removed once I know that everything is working with this function.
-         BR JBerEND
+         ;JBerROR: NOP0
+         ;STRO ''Houston we have a problem!\n\x00'' ;Error checking of my own doing. Poor form, but will be removed once I know that everything is working with this function.
+         ;BR JBerEND
 ;}
 JBerEND:NOP0
 RET0
@@ -336,6 +409,8 @@ JBicAtrg: .equate xx ;COORDINATE* target ;function argument
 JBicifrm: .equate xx ;internal frame size for (variables)
 JBicXFRM: .equate x ;external frame size for target
 
+JBicSg1:  .ASCII "Target entered: \x00"
+
 ;{
 ;	scanf(" %c%d", &(target->column), &(target->row));
 ;	target->column = toupper(target->column);
@@ -345,6 +420,13 @@ RET0
 
 ;-------------------------------------------------------------------------------;
 cpyCoord: NOP0 ;void copyCoord(COORDINATE* original, COORDINATE* copy)
+
+;NAME ARGS
+JBccPorg: .equate xx ;local parameter; arg COORDINATE* original #2h
+JBccPcpy: .equate xx ;local parameter; arg COORDINATE* copy #2h
+;I have these arguments but I don't know what to do with them. Are they characters or integers
+;Meh, maybe I'll just want to load them as hexxes?
+
 ;{
 ;	copy->column = original->column;
 ;	copy->row = original->row;
