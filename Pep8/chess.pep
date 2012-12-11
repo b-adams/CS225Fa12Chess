@@ -178,7 +178,7 @@ iPlSpSt: NOP0
 ;
 ;	printGrid(plr->board);
 
-
+JBipswhl: NOP0 ;call this for while loop
 ;	while(!placed)
 ;	{
 		STRO JBpsSg1, d ;printf(''Where is the front of your 
@@ -190,6 +190,8 @@ iPlSpSt: NOP0
                  	;scanf(" %c", &direction);
 		;placed = placeShip(size, &target, direction, plr);
 ;	}
+BR JBipswhl
+
 ;}
 iPlSpEnd:NOP0
 RET0
