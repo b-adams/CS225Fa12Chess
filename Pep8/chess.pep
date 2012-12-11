@@ -182,7 +182,7 @@ JBipswhl: NOP0 ;call this for while loop
 ;	while(!placed)
 ;	{
 		STRO JBpsSg1, d ;printf(''Where is the front of your 
-                                      ;%s[...], shipName);
+                       STRO ???, sf               ;%s[...], shipName);
                        STRO JBpsSg2   ;? \n''
                        
 		;inputCoord(&target);
