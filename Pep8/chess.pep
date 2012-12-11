@@ -223,7 +223,7 @@ JBerStrt: NOP0 ;Now we get down to business
 ;And probably this one too; bool plr2hits;
 
 
-	;printGrid(plr2->view);
+	;printGrid(plr2->view)
            LDX DLview, i ;waiting on Dauris to name this, Actually I don't even believe this is the first step here
            STA JBerPpl2, x ;again this might be it and might not be it. I'm still following the translation example pretty closely
            LDA JBerPpl2, s
@@ -231,54 +231,110 @@ JBerStrt: NOP0 ;Now we get down to business
            SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
            CALL DLprntGrd ;Call to placeholder name
            ADDSP DLpgXFRM ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
-
+           ;ENDPRINTGRID(PLR2->VIEW)
          
 
 	STRO JBerSg1, d ;printf(''Player 1
 	STRO JBerSg2, d ;: Enter target! '');
-           ;inputCoord(&target);
-	;plr1hits = checkForHit(&target, plr2);
-	;printGrid(plr1->view);
+           
+
+           ;inputCoord(&target)
+           ;prepare target as an argument
+           MOVSPA
+           ADDA target, i
+           STA JBicAtrg, s
+           ;Allocate, call, and deallocate
+           SUBSP JBicXFRM ;Allocate by amount #IMnotSURE
+           CALL inpCoord ;call inputCoordinate    ;I'm assuming that this is where we ACTUALLY enter our target
+           ADDSP JBicXFRM ;Deallocate by amount #IMnotSURE
+           ;END INPUTCOORD (&target)
+           
+	;plr1hits = checkForHit(&target, plr2)
+
+           
+           ;
+            
+	;printGrid(plr1->view)
+
+
+           ;
+
            STRO JBerSg3, d ; printf(''Player 2
            STRO JBerSg2, d;: Enter target! '');
-	;inputCoord(&target);
+	
+           ;inputCoord(&target)
+           MOVSPA
+           ADDA target, i
+           STA JBicAtrg, s
+           ;Allocate, call, and deallocate
+           SUBSP JBicXFRM ;Allocate by amount #IMnotSURE
+           CALL inpCoord ;call inputCoordinate    ;I'm assuming that this is where we ACTUALLY enter our target
+           ADDSP JBicXFRM ;Deallocate by amount #IMnotSURE
+
+           ;END INPUTCOORD(&target)
+
+
 	;plr2hits = checkForHit(&target, plr1);
 
 	STRO JBerSg4, d ;printf(''\n\nSHELLS IN THE AIR!\n\n'');
 
 	STRO JBerSg1, d ;printf(''Player 1
             STRO JBerSg5, d ;... '');
-	;if(plr1hits)
+	JBerp1ht: NOP0;if(plr1hits)
+            CPA 1, i ; compare accumulator to true
+            BRNE JBerp1ms ;if not true jump to else loop
 	;{
 	STRO JBerSg6, d ;printf(''hits!\n'');The Original line says printf(''Player 2...''), but I think this should be printf(''hits!'') ;printf(''Player 2... '');
 		STRO JBerSg3, d ;printf("Player %d 
                        STRO JBerSg7, d      ;can take 
                        ;DECO something?      ;%d 
                              
-                       STRO JBerSg8, d                   ;more hits.\n", 2, plr2->hits);		
+                       STRO JBerSg8, d                   ;more hits.\n", 2, plr2->hits);
+           BR JBerp2ht ;branch to next if loop            		
 	;} else {
-		STRO JBerSg9, d ;printf("misses.\n");
+            JBerp1ms: NOP0 ;initiate else loop
+;do some things inside the else loop
+		STRO JBerSg9, d ;printf(''misses.\n'');
 	;}
-
+           CPA 0, i ;error checking
+           BRNE JBerROR ;error checking
 	STRO JBerSg3, d ;printf("Player 2
-           STRO JBerSg5, d  ;... ");
-	;if(plr2hits)
+           STRO JBerSg5, d  ;... ")
+           BR JBerp2ht ;branch to next if loop
+	JBerp2ht: NOP0;if(plr2hits)
+           CPA 1, i ;compare accumulator to true (1)
+           BRNE JBerp2ms ;if not true jump to else condition
 	;{
-		;printf("hits!\n");
+		STRO JBerSg6, d;printf(''hits!\n'');
                        STRO JBerSg1, d ;printf("Player %d 
                        STRO JBerSg7, d      ;can take 
                        ;DECO something?      ;%d 
                              
-                       STRO JBerSg8, d                   ;more hits.\n", 1, plr1->hits);		
-	;} else {
-		STRO JBerSg9, d ;printf("misses.\n");
+                       STRO JBerSg8, d ;more hits.\n", 1, plr1->hits);
+                       BR JBerEND ;jump to return		
+	JBerp2ms: NOP0;} else {
+           CPA 0, i ;error checking
+           BRNE JBerROR ;error checking
+	STRO JBerSg9, d ;printf(''misses.\n'');
+           BR JBerEND
 	;}
+         JBerROR: NOP0
+         STRO "Houston we have a problem!\n\x00" ;Error checking of my own doing. Poor form, but will be removed once I know that everything is working with this function.
+         BR JBerEND
 ;}
+JBerEND:NOP0
 RET0
+
 
 
 ;-------------------------------------------------------------------------------;
 inpCoord: NOP0 ;void inputCoord(COORDINATE* target)
+
+
+JBicAtrg: .equate xx ;COORDINATE* target ;function argument
+
+JBicifrm: .equate xx ;internal frame size for (variables)
+JBicXFRM: .equate x ;external frame size for target
 
 ;{
 ;	scanf(" %c%d", &(target->column), &(target->row));
