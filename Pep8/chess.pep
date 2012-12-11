@@ -50,9 +50,9 @@ STA distance,s
 STRO prompt,i
 CHARO drection,s
 LDA drection,s ;if drection..
-CPA DIR_NORTH,s ;is equal to 'n'
+CPA DIR_NORT,s ;is equal to 'n'
 BREQ north ;place it north
-CPA DIR_SOUTH,i ;is equal to 's'
+CPA DIR_STH,i ;is equal to 's'
 BREQ south ;place it south
 CPA DIR_EAST,i ;is equal to 'e'
 BREQ east ;place it east
@@ -124,9 +124,10 @@ RET0
   ;	int rowIndex = where->row - MIN_ROW;
   ;	return grid[colIndex][rowIndex];
   ;}
-where: .Equate 0 ;local variable #2h
-grid: .Equate 2 ;local array #1c2a
-gtSpace: .Equate 4 ;size of stack of #grid #where
+
+where: .Equate 0 ;local variable #column #row
+grid: .Equate 3 ;local array #1c2a
+gtSpace: .Equate 5 ;size of stack of #grid #where
 
 getSpace: NOP0
 SUBSP gtSpace,i ;allocating #grid #where
@@ -176,6 +177,20 @@ ADDSP gtSpace,i ;deallocating #where #grid
   ;	return true; //Success!
   ;}
 
+size: .Equate 0 ;local variable #2d
+target: .Equate 2 ;local variable #column #row
+drection: .Equate 5;local variable #1c
+whom: .Equate 6 ;local variable #2h
+plcShip: .Equate 8 ;size of stack of #whom #drection #where #size
+
+placShip: NOP0
+SUBSP plcShip,i ;allocating #whom #drection #where #size
+
+
+
+ADDSP plcShip,i ;deallocating #size #where #drection #whom
+;****************************************************************
+;****************************************************************
 ;const int GAME_NOT_OVER = 0;
 ;***void playLoop(PLAYER* plr1, PLAYER* plr2);***
   ;{
