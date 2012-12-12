@@ -348,13 +348,13 @@ JBerStrt: NOP0 ;Now we get down to business
 
 
 	;printGrid(plr2->view)
-           LDX DLview, i ;waiting on Dauris to name this, Actually I don't even believe this is the first step here
-           LDA JBerPpl2, x ;again this might be it and might not be it. I'm still following the translation example pretty closely
+           LDX view, i ;using up-to-date name on this
+           LDA JBerPpl2, sf ;again this might be it and might not be it. I'm still following the translation example pretty closely
            ;LDA JBerPpl2, s
            STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
-           SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
-           CALL DLprntGrd ;Call to placeholder name
-           ADDSP DLpgXFRM ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+           SUBSP DLpgXFRM, i ;Allocate placeholder amount #grid
+           CALL printGrid ;up-to-date name that will need to be changed
+           ADDSP DLpgXFRM ;Deallocate by placeholder amount #grid
            ;ENDPRINTGRID(PLR2->VIEW)
          
 
@@ -381,22 +381,24 @@ JBerStrt: NOP0 ;Now we get down to business
             ;prepare arg (&target)
              MOVSPA
              ADDA JBerAtrg, i
-             STA CLcfhAwh, i
+             STA CLcfhAwh, sf ;I think stack deferred is right here. It's either this or just plain ol' stack addressing. ;placeholder name for COORDINATE* where
             ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
              ;Allocate/Deallocate and Call
              SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
              CALL checkHit ;Call to placeholder name
              ADDSP CLchXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
-             STA JBerVp1h, s ;store the returned value in bool player1hits 
+             LDBYTEA checkHit, d 
+             STBYTEA JBerVp1h, s ;store the returned value in bool player1hits
+             ;if I'm loading and storing directly to a variable then do I really need to call checkHit anyway?
             ;END PLR1HITS = CHECKFORHIT(&TARGET, PLR2)
             
 	;printGrid(plr1->view)
-            LDX DLview, i ;using placeholder name for view
-            LDA JBerPpl1, x
-            STA DLpgAgrd, s ;using placeholder name for grid arg of printgrid func.
-            SUBSP DLpgXFRM, i ;Allocate placeholder amount #dunnoNameYet #DUNNOnAMEyET
-            CALL DLprntGrd ;Call to placeholder name
-            ADDSP DLpgXFRM ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+            LDX view, i ;load view into the index
+            LDA JBerPpl1, sf
+            STA grid, s ;store PLAYER* player1 to grid
+            SUBSP DLpgXFRM, i ;Allocate placeholder amount #gridTBA
+            CALL printGrid ;Call to printgrid (The name of this function will eventually have to change because it is too long, but for now this is the up-to-date name)
+            ADDSP DLpgXFRM ;Deallocate by placeholder amount #gridTBA
             ;END PRINTGRID(plr1->view)
 
            STRO JBerSg3, d ; printf(''Player 2
@@ -426,7 +428,8 @@ JBerStrt: NOP0 ;Now we get down to business
              SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
              CALL checkHit ;Call to placeholder name
              ADDSP CLchXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
-             STA JBerVp2h, s ;store the returned value to bool plr2hits
+             LDBYTEA checkHit, d
+             STBYTEA JBerVp2h, s ;store the returned value to bool plr2hits
            ;END PLR2HITS =  CHECKFORHIT(&TARGET, PLR1)
 ;spider-senses tell me that these lines require more messing with the index. I might not be doing these right since I'm all in the accumulator
             
