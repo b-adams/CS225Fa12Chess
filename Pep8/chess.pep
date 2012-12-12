@@ -5,7 +5,7 @@ STOP
 
 
 ; Steere Stuff begins
-MIN_COL: .equate 'A'; Minimum column
+MIN_COL: .equate 'A'; Minimum column ;ERROR: .EQUATE requires a dec, hex, or string constant argument.
 MAX_COL: .equate 'H'; Maximum column
 MIN_ROW: .equate 1; Minimum Row
 MAX_ROW: .equate 8; Maximum Row
@@ -41,24 +41,50 @@ GAM_P2: .equate 2; Game over player 2
 ; Evans Stuff begins
 ;------------------------------int checkGameOver(PLAYER* plr1, PLAYER* plr2);---------------
 ckgmeova:NOP0
+
+KEwhowin: .equate -2 ;local variable for return value #2d
+plr1: .equate -4 ;local pointer #2h
+plr2: .equate -6 ;local pointer #2h
+KEovaFRM: .equate 6 ;frame for CALLER
+
+ovafrm: .equate 8 ;frame for callee
+whowin: .equate 6 ;return value #2d
+
+
+
 ldx plr1,i
+LDA hits,sxf
+STA plr1,sxf
 cpa 1,i
 BRLT plr2win
 ldx plr2,i
+LDA hits,sxf
+STA plr2,sxf
 cpa 1,i 
 BRLT plr1win
+BR notover,d
 
          plr2win: NOP0
-
+         LDA GAM_P2,d
+         STA KEwhowin,s
 
          plr1win: NOP0
+         LDA GAM_P1,d
+         STA KEwhowin,s
+      
+
+         notover: NOP0
+         LDA GAM_NT,d
+         STA KEwhowin,s
+      
+RET0
 
 ;------------------------------void runGame(void)--------------------------------
 
 runGame: NOP0
-
-player: .equate 0 #2h 
-
+plr1: .equate 0 ;local structure #board #view #hits
+plr2: .equate 2 ;local structure #board #view #hits
+KErungme: .equate 6;frame for local structures
 
 
 msg1: .ASCII "\t\tWelcome to Shooting Boats!\n\n\n\x00"
@@ -67,23 +93,36 @@ msg3: .ASCII "Setting up player 2\n\x00"
 msg4: .ASCII "\n\n\n\n\n\n\n\n\x00"
 msg5: .ASCII "\t\tTime to play!\n\x00"
 msg6: .ASCII "\t\tThe game is over!\n\x00"
+tie: .ASCII "Mutually Assured Destruction!\n\x00"
+plr1win: .ASCII "Player 1 survives!!\n\x00"
+plr2win: .ASCII "Player 2 triumphs!\n\x00"
+default: .ASCII "The Bermuda Triangle strikes again...\x00"
 
 STRO msg1,d
-
 STRO msg2,d
 LDX plr1,i ;prepare to access player 1 for setup
+SUBSP plrFRAME,i ;allocating space for call #plr
 CALL setupPlr 
+ADDSP plrFRAME,i ;deallocating space for call #plr
+
 STRO msg4,d
 
 STRO msg3,d
 LDX plr2,i ;prepare to access player 2 for setup
+SUBSP plrFRAME,i ;allocating space for call #plr
 CALL setupPlr
+ADDSP plrFRAME,i ;deallocating space for call #plr
+
 STRO msg4,d
 
 STRO msg5,d
+SUBSP ;*************dont forget to allocate space
 CALL playLoop
+ADDSP ;*************dont forget to deallocate space
 STRO msg6,d
 
+SUBSP KEovaFRM,i
+LDX KEwhowin,s
 BR KEswitch,x
 
          KEswitch: .ADDRSS case0
@@ -98,28 +137,48 @@ BR KEswitch,x
                 BR endCase
          case3: STRO default,d
                 BR endCase
-         tie: .ASCII "Mutually Assured Destruction!\n\x00"
-         plr1win: .ASCII "Player 1 survives!!\n\x00"
-         plr2win: .ASCII "Player 2 triumphs!\n\x00"
-         default: .ASCII "The Bermuda Triangle strikes again...\x00"
+ADDSP KEovaFRM,i
 
-
-
+endCase: RET0   
 
 ;----------------------------------------void setupPlayer(PLAYER* plr);--------------------
 
 setupPlr: NOP0
 
-target: .equate 0 ;local address #2h
+KEdirect: .equate 0 ;local variable #1c
+KEok: .equate 1 ;local variable #1c
+KEtarget: .equate 2 ;local structure #row #column
+setupFR: .equate 5;frame for callee
 
-LDX column,i
-STX target,sxf
-LDA target,s
-STA drexion,s
+plr: .equate -2 ;local pointer #2h
+plrFRAME: .equate 2 ;frame for CALLER
+
+KEokmsg: .ASCII "Is this setup ok? [y/n]\x00"
+
+subsp setupFR,i
+while: LDBYTEA KEok,s ;THE WHILE LOOP
+CPA 'n',i
+BREQ endWh
+BR setup
 
 
-LDX row,i
-STX target,sxf
+setup: NOP0
+SUBSP KEwhoFRM
+CALL resetPlr ;resetPlater(plr)
+ADDSP KEwhoFRM
+SUBSP  ;*****************************check
+CALL intPlShp ;Call the interactivePlaceShip
+ADDSP i ;*****************************check
+SUBSP plrFRAME,i ;*****************************check
+CALL prntgrid ;Call printGrid(plr->board)
+ADDSP plrFRAME,i ;*****************************check
+STRO KEokmsg,d
+CHARI ok,d
+BR while
+
+endWh: NOP0
+ADDSP setupFR,i
+RET0     
  
 
 
@@ -127,13 +186,58 @@ STX target,sxf
 
 resetPlr: NOP0
 
+KEwhom: .equate -2 ;local pointer #2h
+KEwhoFRM: .equate 2 ;frame for caller
+
+j: .equate 0 ;local variable #2d
+
+LDX hits,i ;whom->hits=0
+LDA 0,i
+STA KEwhom,s
+;SETTING UP FOR LOOP: NEED LOOP WITHIN LOOP
+SUBSP 2,i ;allocate #j 
+LDA 0,i
+STA j,s
+CPA 8
+BRGE endFor
+Call setCoord
+Call setWater
+DECO j,s
+CHARO '\n',i
+LDA j,s
+ADDA 1,i
+STA j,s
+BR for
+
+endFor: NOP0
+DECO j,s
+CHARO '\n',i
+ADDSP 2,i ;deallocate #j
+RET0
+
+
 
 ;---------------------------------------void setCoord(COORDINATE* where, int r, int c);----
 
 setCoord: NOP0
-
 ;where->column=c+MIN_COL;
 ;where->row=r+MIN_ROW;
+c: .equate -6 ;local variable #2d
+r: .equate -4 ;local variable #2d
+KEwhere: .equate -2 ;local structure #column #row
+KEsetFRM: .equate 6 ;frame for CALLER
+
+LDA MIN_COL,d
+ADDA c,s
+STA column,sxf
+
+LDA MIN_ROW,d
+ADDA r,s
+STA row,sxf
+
+RET0
+
+
 
 ; Evans Stuff ends
 
