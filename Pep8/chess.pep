@@ -349,7 +349,7 @@ JBerStrt: NOP0 ;Now we get down to business
 
 	;printGrid(plr2->view)
            LDX view, i ;using up-to-date name on this
-           LDA JBerPpl2, sf ;again this might be it and might not be it. I'm still following the translation example pretty closely
+           LDA JBerPpl2, sxf ;again this might be it and might not be it. I'm still following the translation example pretty closely
            ;LDA JBerPpl2, s
            STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
            SUBSP DLpgXFRM, i ;Allocate placeholder amount #grid
@@ -381,20 +381,21 @@ JBerStrt: NOP0 ;Now we get down to business
             ;prepare arg (&target)
              MOVSPA
              ADDA JBerAtrg, i
-             STA CLcfhAwh, s ;I think stack deferred is right here. It's either this or just plain ol' stack addressing. ;placeholder name for COORDINATE* where
+             STA CLcfhAwh, s ;I think stack is right here. ;placeholder name for COORDINATE* where
             ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
              ;Allocate/Deallocate and Call
              SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
              CALL checkHit ;Call to placeholder name
+             STBYTEA JBerVp1h, s ;store the returned value in bool player1->hits
              ADDSP CLchXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
-             LDBYTEA checkHit, d 
-             STBYTEA JBerVp1h, s ;store the returned value in bool player1hits
+
+
              ;if I'm loading and storing directly to a variable then do I really need to call checkHit anyway?
             ;END PLR1HITS = CHECKFORHIT(&TARGET, PLR2)
             
 	;printGrid(plr1->view)
             LDX view, i ;load view into the index
-            LDA JBerPpl1, sf
+            LDA JBerPpl1, sxf
             STA grid, s ;store PLAYER* player1 to grid
             SUBSP DLpgXFRM, i ;Allocate placeholder amount #gridTBA
             CALL printGrid ;Call to printgrid (The name of this function will eventually have to change because it is too long, but for now this is the up-to-date name)
