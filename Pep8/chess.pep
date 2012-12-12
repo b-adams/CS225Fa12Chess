@@ -381,7 +381,7 @@ JBerStrt: NOP0 ;Now we get down to business
             ;prepare arg (&target)
              MOVSPA
              ADDA JBerAtrg, i
-             STA CLcfhAwh, sf ;I think stack deferred is right here. It's either this or just plain ol' stack addressing. ;placeholder name for COORDINATE* where
+             STA CLcfhAwh, s ;I think stack deferred is right here. It's either this or just plain ol' stack addressing. ;placeholder name for COORDINATE* where
             ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
              ;Allocate/Deallocate and Call
              SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
@@ -422,7 +422,7 @@ JBerStrt: NOP0 ;Now we get down to business
             ;prepare arg (&target)
              MOVSPA
              ADDA JBerAtrg, i
-             STA CLcfhAwh, i
+             STA CLcfhAwh, s
             ;DONE PREPARING T(ARG)ument ;(I'm punny! Please no-one read this!)
              ;Allocate/Deallocate and Call
              SUBSP CLchXFRM, i ; allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
