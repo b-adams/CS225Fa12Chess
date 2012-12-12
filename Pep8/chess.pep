@@ -370,22 +370,34 @@ RET0
   ;	if(direction==DIR_WEST) where->column -= distance;
   ;	if(direction==DIR_EAST) where->column += distance;
   ;}
-
+;Doesn't this function just alter stuff that already exists?? Do I make up variables anyway??
 prompt: .ASCII "Where would you like place the tail of the ship?"
 oops: .ASCII "Can't be placed there..."
 
-CLmcwhr: .Equate 0 ;struct field #DLColumn #DLrow
-CLmcdist: .Equate 3 ;struct field #2d
-CLmcdrec: .Equate 5 ;struct field #1c
-CLmvCrdF: .Equate 6 ;local variable #drection #distance #where
-   
+;CLmcAwhr: .Equate 0 ;struct field #DLColumn #DLrow
+;CLmcAdis: .Equate 3 ;struct field #2d
+;CLmcAdre: .Equate 5 ;struct field #1c
+;CLmccleF: .Equate 6 ;local variable #drection #distance #where
+;'?'
+CLmcAwhr: .Equate -6 ;formal argument #DLcolumn #DLrow
+CLmcAdis: .Equate -3 ;formal argument #2d
+CLmcAdre: .Equate -1 ;formal argument #1c
+ClmcClrF: .Equate 6 ;size of #CLmcAdre #CLmcAdis #CLmcAwhr
+
+CLmcAdis: .Equate 0 ;local variable #2d
+CLmcAdre: .Equate 2 ;local variable #1d
+CLmcCleF: .Equate 3 ;size of #CLmcAdre #CLmcAdis
+CLmcPwhr: .Equate 5 ;formal perameters #DLcolumn #DLrow
+ClmcPdis: .Equate 8 ;formal perameterse #2d
+CLmcdre: .Equate 10 ;formal perameters #1c
+;'?' "PS haven't change the rest of the Function..."
 CLmvCord: NOP0
-SUBSP CLmvCrdF,i ;allocating #drection #distance #where
+SUBSP CLmcCleF,i ;allocating #drection #distance #where
 LDA 1,i
-STA CLmcdist,s
+STA CLmcAdis,s
 STRO prompt,i
-CHARO CLmcdrec,s
-LDA CLmcdrec,s ;if drection..
+CHARO CLmcAdre,s
+LDA CLmcAdre,s ;if drection..
 CPA DIR_NORT,s ;is equal to 'n'
 BREQ north ;place it north
 CPA DIR_STH,i ;is equal to 's'
@@ -400,41 +412,41 @@ BR retry ;is equal to no valid choice...
 
 north: NOP0 ;where->row -= distance
 LDX DLrow,i
-STX CLmcwhr,sxf
-LDA CLmcwhr,sxf
-SUBA distance,s
-STA CLmcwhr,sxf
-LDX CLmcwhr,sxf
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+SUBA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
 STX DLrow,i
 BR placed
 
 south: NOP0 ;where->row += distance
 LDX DLrow,i
-STX CLmcwhr,sxf
-LDA CLmcwhr,sxf
-ADDA CLmcdist,s
-STA CLmcwhr,sxf
-LDX CLmcwhr,sxf
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+ADDA CLmcAdist,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
 STX DLrow,i
 BR placed
 
 east: NOP0 ;where->column += distance
 LDX DLcolumn,i
-STX CLmcwhr,sxf
-LDA CLmcwhr,sxf
-ADDA CLmcdist,s
-STA CLmcwhr,sxf
-LDX CLmcwhr,sxf
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+ADDA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
 STX DLcolumn,i
 BR placed
 
 west: NOP0 ;where->column -= distance
 LDX DLcolumn,i
-STX CLmcwhr,sxf
-LDA CLmcwhr,sxf
-SUBA CLmcdist,s
-STA CLmcwhr,sxf
-LDX CLmcwhr,sxf
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+SUBA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
 STX DLcolumn,i
 BR placed
 
@@ -446,7 +458,7 @@ STRO oops,i
 BR CLmvCord
 
 placed: NOP0
-ADDSP CLmvCrdF,i ;deallocating #where #distance #drection
+ADDSP CLmcCleF,i ;deallocating #where #distance #drection
 RET0
 ;*****************************************************************
 ;*****************************************************************
@@ -461,12 +473,18 @@ RET0
   ;	return grid[colIndex][rowIndex];
   ;}
 
-CLgswhr: .Equate 0 ;local variable #column #row
-CLgsgrid: .Equate 3 ;local array #1c2a
-CLgsF: .Equate 5 ;size of stack of #grid #where
+CLgsAwhr: .Equate -66 ;formal argument #2d
+CLgsAgrd: .Equate -64 ;Formal argument #1c64a
+CLgsClrF: .Equate 66 ;size of #CLgsAgrd #CLgsAwhr
+
+CLgsVclI: .Equate 0 ;local variable #2d
+CLgsVrwI: .Equate 2 ;local variable #2d
+CLgsCleF: .Equate 4 ;size of stack of #grid #where
+CLgsPwhr: .Equate 6 ;formal perameter #column #row
+CLgsPgrd: .Equate 9 ;formal perameter #1c64
 
 CLgtSpac: NOP0
-SUBSP CLgsF,i ;allocating #grid #where
+SUBSP CLgsCleF,i ;allocating #grid #where
 LDX DLcolumn,i
 STX CLgswhr,sxf
 LDA CLgswhr,sxf
@@ -480,7 +498,7 @@ LDX 3,i ;Maybe useful in shifting from grid[colIndex] to grid[rowIndex]??
 STA CLgsgrid,sx ;Should store byte!! STBYTE?
 
 
-ADDSP CLgsF,i ;deallocating #where #grid
+ADDSP CLgsCleF,i ;deallocating #where #grid
 ;****************************************************************
 ;****************************************************************
 ;const char BOARD_WATER = '~';
@@ -518,23 +536,23 @@ CLpsAdre: .Equate -6;formal arguement #1c
 CLpsAwhr: .Equate -5 ;formal arguement #2h
 CLpsAwho: .Equate -3 ;formal arguement #2h
 CLspORtV: .Equate -1 ;formal return value #1d
-CLcaleeF: .Equate 8 ;size of #CLpsAsiz #CLpsAdre #CLpsAwhr #CLpsAwho #CLspORtV
+CLpsClrF: .Equate 8 ;size of #CLpsAsiz #CLpsAdre #CLpsAwhr #CLpsAwho #CLspORtV
 
-CLpsdist: .Equate 0 ;local variable #2d
-CLpstarg: .Equate 2 ;local variable #DLcolumn #DLrow
-CLpsF: .Equate 5 ;size of stack of #CLpstarg #CLpsdist
+CLpsAdis: .Equate 0 ;local variable #2d
+CLpsAtar: .Equate 2 ;local variable #DLcolumn #DLrow
+CLpsCleF: .Equate 5 ;size of stack of #CLpstarg #CLpsdist
 CLpsPsiz: .Equate 7 ;formal perameter #2d
 CLpsPdre: .Equate 9 ;formal perameter #1c
 CLpsPwhr: .Equate 10 ;formal perameter #2h
 CLpsPwho: .Equate 12 ;formal perameter #2h
-CLspRetV: .Equate 14 ;formal return value #1d
+CLpsRetV: .Equate 14 ;formal return value #1d
 
 CLplcShp: NOP0
-SUBSP CLpsF,i ;allocating #CLpstarg #CLpsdist
+SUBSP CLpsCleF,i ;allocating #CLpsAtar #CLpsAdis
 
 
 
-ADDSP CLpsF,i ;deallocating #CLpsdist #CLpstarg
+ADDSP CLpsCleF,i ;deallocating #CLpsAdis #CLpsAtar
 ;****************************************************************
 ;****************************************************************
 ;const int GAME_NOT_OVER = 0;
@@ -549,15 +567,17 @@ ADDSP CLpsF,i ;deallocating #CLpsdist #CLpstarg
   ;	}
   ;}
 
+CLplApr1: .Equate -12 ;formal argument #DLhit #DLgrid #DLboard
+CLplApr2: .Equate -6 ;formal argument #DLhit #DLgrid #DLboard
+CLcaleeF: .Equate 12 ;size of stack of #CLplApr2 #CLplApr1
+
 CLplEnGm: .Equate 0 ;local variable #2d
-CLplF: .Equate 2 ;size of stack of #endGame
+CLplCleF: .Equate 2 ;size of stack of #endGame
+CLplPpr1: .Equate 4 ;formal perameter #DLhit #DLgrid #DLboard
+CLplPpr2: .Equate 9 ;formal perameter #DLhit #DLgrid #DLboard
 
-CLplAPy1: .Equate 0 ;local variable #2h
-CLplAPy2: .Equate 2 ;local variable #2h
-CLcaleeF: .Equate 4 ;size of stack of #CLplAPy2 #CLplAPy1
-
-playLoop: NOP0
-SUBSP CLplF,i ;allocating #endGame
+CLplylop: NOP0
+SUBSP CLplCleF,i ;allocating #endGame
 LDA GAME_NOT_OVER,d
 STA CLplEnGm,s
 
@@ -574,7 +594,7 @@ ADDSP CLcaleeF,i ;deallocating #lopPlyr1 #lopPlyr2
 BR start
 
 end: NOP0
-ADDSP CLplF,i ;deallocating #endGame
+ADDSP CLplCleF,i ;deallocating #endGame
 RET0
 ;****************************************************************
 ;****************************************************************
@@ -602,7 +622,20 @@ RET0
   ;	}
   ;}
 
+CLchAwhr: .Equate -10 ;formal argument #DLcolumn #DLrow
+CLchAwho: .Equate -7 ;formal argument #DLhit #DLgrid #DLboard
+CLchORtV: .Equate -1 ;formal argument #1d
+CLchClrF: .Equate 10 ;size of #CLchORtV #CLchAwho #CLchAwhr
 
+CLchVact: .Equate 0 ;local variable #1c
+CLchCleF: .Equate 1 ;size of #CLchVact
+CLchPwhr: .Equate 3 ;formal perameter #DLcolumn #DLrow
+CLchPply: .Equate 6 ;formal perameter #DLhit #DLgrid #DLboard
+CLchRetV: .Equate 12 ;formal return value
+
+CLCk4Hit: NOP0
+
+;***************************************************************
 ;--------------LeBerth Stuff ends-----------------
 
 
