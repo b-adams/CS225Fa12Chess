@@ -244,8 +244,8 @@ RET0
 
 ; Brutscher Stuff begins
 ;-------------------------------------------------------------------------------;
-intPlShp: NOP0 ;void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
-Br iPlSpSt
+;;void interactivePlaceShip(PLAYER *plr, char* shipName, int size)
+;Br iPlSpSt
 ;DETERMINE VARIABLES AND NAMES
 JBpsVplc: .equate 0 ;bool placed (=false) ;local variable #1h
 JBpsVdir: .equate  1 ;char direction ;local variable #1c
@@ -277,33 +277,90 @@ JBpsSg3: .ASCII "Which direction is the rest of it? (n,e,w,s): \x00"
 ;{
 ;	COORDINATE target;
 ;	char direction;
-;	bool placed=false;
-iPlSpSt: NOP0
+
 ;
-;	printGrid(plr->board);
+
+intPlShp: NOP0
+;           bool placed=false
+            LDBYTEA 0, i
+            STBYTEA JBpsVplc, s
+;           END BOOL PLACED = FALSE
+
+;	printGrid(plr->board)
+           LDX board, i ;using up-to-date name on this
+           LDA JBerPpl2, sxf 
+           STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
+           SUBSP DLpgXFRM, i ;Allocate placeholder amount #grid
+           CALL printGrid ;up-to-date name that will need to be changed
+           ADDSP DLpgXFRM ;Deallocate by placeholder amount #grid
+           ;END PRINTGRID(PLR->BOARD)
 
 JBipswhl: NOP0 ;call this for while loop
 ;	while(!placed)
+          LDBYTEA JBpsVplc, s
+          BRNE iPlSpEnd
 ;	{
 		STRO JBpsSg1, d ;printf(''Where is the front of your 
-                       STRO ???, sf               ;%s[...], shipName);
+                       STRO JBpsPspn, sf ;%s[...], shipName) ; not so confident on this is 1 (character) byte enough? ; should I change the size of this parameter?
                        STRO JBpsSg2   ;? \n''
                        
-		;inputCoord(&target);
-		;printf("Which direction is the rest of it? (n,e,w,s):");
-                 	;scanf(" %c", &direction);
-		;placed = placeShip(size, &target, direction, plr);
+		;inputCoord(&target)
+                       ;prepare &target as an argument
+                       MOVSPA
+                       ADDA JBpsVtrg, i
+                       STA JBicAtrg, s
+
+                       ;allocate, deallocate, and call
+                       SUBSP JBicXFRM, i ;allocate by amount #JBicAtrg
+                       CALL inpCoord
+                       ADDSP JBicXFRM, i ;deallocate by amount #JBicAtrg
+                       ;END INPUTCOORD(&TARGET)
+
+
+
+		STRO JBpsSg3, d ;printf(''Which direction is the rest of it? (n,e,w,s):'');
+                 	
+                       ;scanf(" %c", &direction)
+                       CHARI JBpsVdir, s
+                       ;		
+
+                       ;placed = placeShip(size, &target, direction, plr) 
+                       ; delocalized args: (int size, COORDINATE* where, char direction, PLAYER* whom)
+                       ;prepare to load size as argument
+                       LDA JBpsPsze, s
+                       STA CLpsAsze, s ;placeholder Placeship (int size)
+                       
+                       ;prepare to load &target as arg
+                       MOVSPA
+                       ADDA JBpsVtrg, i
+                       STA CLpsAwr, s ;Placeholder name for COORDINATE* where
+                       
+                       ;prepare to load direction as arg
+                       LDA JBpsVdir, s
+                       STA CLpsAdir, s ;direction placeholder
+
+                       ;prepare to load plr as arg
+                       LDA JBpsPplr, s
+                       STA CLpsAplr, s ;plr placeholder
+                       
+                       ;Allocate/Deallocate/Call/(set variables)
+                       SUBSP CLpsXFRM, i ;Allocate by placeholder amount #dunnoNameYet #DUNNOnAMEyET
+                       CALL placeShip ;placeholder name for bool placeShip func
+                       STBYTEA JBpsVplc, s ;LOAD THAT SHIT INTO bool placed BEFORE ANYONE CATCHES ON!
+                       ADDSP CLpsXFRM, i ;Deallocate by placeholder amount #DUNNOnAMEyET #dunnoNameYet
+                       ;END PLACED = PLACESHIP (SIZE, &TARGET, DIRECTION, PLR)
+
 ;         }
-BRNE iPlSpEnd ;check to see if the placed value has been set to NOT FALSE
-BR JBipswhl
+;BRNE iPlSpEnd ;check to see if the placed value has been set to NOT FALSE
+;BR JBipswhl
 
 ;}
 iPlSpEnd:NOP0
 RET0
 
 ;-------------------------------------------------------------------------------;
-extRound: NOP0 ;void executeRound(PLAYER* plr1, PLAYER* plr2)
-BR JBerStrt ;skipping my variables and parameters and calle(e/r) names and strings and such
+;extRound: NOP0 ;void executeRound(PLAYER* plr1, PLAYER* plr2)
+;BR JBerStrt ;skipping my variables and parameters and calle(e/r) names and strings and such
 
 ;DETERMINE VARIABLES AND NAMES
 JBerVp1h: .equate 0 ;bool plr1hits ;local variable #1h
@@ -340,7 +397,7 @@ JBerSg8: .ASCII "more hits \x00"
 JBerSg9: .ASCII "misses.\n\x00"
 
 
-JBerStrt: NOP0 ;Now we get down to business
+extRound: NOP0
 ;{
 ; I think that this line takes care of itself; COORDINATE target;
 ;And this one; bool plr1hits;
@@ -512,7 +569,7 @@ RET0
 
 
 ;-------------------------------------------------------------------------------;
-inpCoord: NOP0 ;void inputCoord(COORDINATE* target)
+
 
 
 JBicAtrg: .equate xx ;COORDINATE* target ;function argument
@@ -522,6 +579,7 @@ JBicXFRM: .equate x ;external frame size for target
 
 JBicSg1:  .ASCII "Target entered: \x00"
 
+inpCoord: NOP0 ;void inputCoord(COORDINATE* target)
 ;{
 ;	scanf(" %c%d", &(target->column), &(target->row));
 ;	target->column = toupper(target->column);
@@ -530,17 +588,26 @@ JBicSg1:  .ASCII "Target entered: \x00"
 RET0
 
 ;-------------------------------------------------------------------------------;
-cpyCoord: NOP0 ;void copyCoord(COORDINATE* original, COORDINATE* copy)
+;void copyCoord(COORDINATE* original, COORDINATE* copy)
 
 ;NAME ARGS
-JBccPorg: .equate xx ;local parameter; arg COORDINATE* original #2h
-JBccPcpy: .equate xx ;local parameter; arg COORDINATE* copy #2h
+JBccPorg: .equate 0 ;local parameter; arg COORDINATE* original #2h
+JBccPcpy: .equate 2 ;local parameter; arg COORDINATE* copy #2h
 ;I have these arguments but I don't know what to do with them. Are they characters or integers
 ;Meh, maybe I'll just want to load them as hexxes?
 
+cpyCoord: NOP0 
 ;{
 ;	copy->column = original->column;
+           LDX column, i
+           LDA JBccPorg, sxf ;original -> column  ; (backwards notation) column <- original
+;          LDX column, i     ;commented out because I now believe this line is redundant ;codesize: - 3 bytes
+           STA JBccPcpy, sxf ;copy -> original =  ; (backwards notation) = original <- copy
 ;	copy->row = original->row;
+           LDX row, i
+           LDA JBccPorg, sxf ;original -> row ;(B.W.Notation): row <- original
+;          LDX row, i ;come to think of it row should already be in the index ;Pretty sure this line is redundant codesize: -3 (more) bytes
+           STA JBccPcpy, sxf
 ;}
 RET0
 ;-------------------------------------------------------------------------------;
