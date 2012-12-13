@@ -5,7 +5,7 @@ STOP
 
 
 ; Steere Stuff begins
-MIN_COL: .equate 'A'; Minimum column ;ERROR: .EQUATE requires a dec, hex, or string constant argument.
+MIN_COL: .equate 'A'; Minimum column
 MAX_COL: .equate 'H'; Maximum column
 MIN_ROW: .equate 1; Minimum Row
 MAX_ROW: .equate 8; Maximum Row
@@ -549,37 +549,39 @@ RET0
 
 ;---------------LeBerth Stuff begins-------------
 ;******************************************************************
-;const char DIR_NONE='x';
-;const char DIR_NORTH='n';
-;const char DIR_EAST='e';
-;const char DIR_SOUTH='s';
-;const char DIR_WEST='w';
 ;***void movCoord(COORDINATE* where, int distance, char direction);***
-  ;void moveCoord(COORDINATE* where, int distance, char direction)
   ;{
   ;	if(direction==DIR_NORTH) where->row -= distance;
   ;	if(direction==DIR_SOUTH) where->row += distance;
   ;	if(direction==DIR_WEST) where->column -= distance;
   ;	if(direction==DIR_EAST) where->column += distance;
   ;}
+;Doesn't this function just alter stuff that already exists?? Do I make up variables anyway??
 prompt: .ASCII "Where would you like place the tail of the ship?"
 oops: .ASCII "Can't be placed there..."
+;///Adresses for Caller///
+CLmcAwhr: .Equate -6 ;formal argument #DLcolumn #DLrow
+CLmcAdis: .Equate -3 ;formal argument #2d
+CLmcAdre: .Equate -1 ;formal argument #1c
+ClmcClrF: .Equate 6 ;size of #CLmcAdre #CLmcAdis #CLmcAwhr
+;///Local variables and addresses for function as callee///
+CLmcAdis: .Equate 0 ;local variable #2d
+CLmcAdre: .Equate 2 ;local variable #1d
+CLmcCleF: .Equate 3 ;size of #CLmcAdre #CLmcAdis
+CLmcPwhr: .Equate 5 ;formal perameters #DLcolumn #DLrow
+ClmcPdis: .Equate 8 ;formal perameterse #2d
+CLmcdre: .Equate 10 ;formal perameters #1c
 
-where: .Equate 0 ;struct field #2h
-distance: .Equate 2 ;struct field #2d
-drection: .Equate 4 ;struct field #1c
-mvCoord: .Equate 5 ;local variable #drection #distance #where
-   
-movCoord: NOP0
-SUBSP mvCoord,i ;allocating #drection #distance #where
+CLmvCord: NOP0
+SUBSP CLmcCleF,i ;allocating #CLmcAdre #CLmcAdis
 LDA 1,i
-STA distance,s
+STA CLmcAdis,s
 STRO prompt,i
-CHARO drection,s
-LDA drection,s ;if drection..
-CPA DIR_NORTH,s ;is equal to 'n'
+CHARO CLmcAdre,s
+LDA CLmcAdre,s ;if drection..
+CPA DIR_NORT,s ;is equal to 'n'
 BREQ north ;place it north
-CPA DIR_SOUTH,i ;is equal to 's'
+CPA DIR_STH,i ;is equal to 's'
 BREQ south ;place it south
 CPA DIR_EAST,i ;is equal to 'e'
 BREQ east ;place it east
@@ -590,43 +592,43 @@ BR none ;it is one point
 BR retry ;is equal to no valid choice...
 
 north: NOP0 ;where->row -= distance
-LDX row,i
-STX where,sxf
-LDA where,sxf
-SUBA distance,s
-STA where,sxf
-LDX where,sxf
-STX row,i
+LDX DLrow,i
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+SUBA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
+STX DLrow,i
 BR placed
 
 south: NOP0 ;where->row += distance
-LDX row,i
-STX where,sxf
-LDA where,sxf
-ADDA distance,s
-STA where,sxf
-LDX where,sxf
-STX row,i
+LDX DLrow,i
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+ADDA CLmcAdist,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
+STX DLrow,i
 BR placed
 
 east: NOP0 ;where->column += distance
-LDX column,i
-STX where,sxf
-LDA where,sxf
-ADDA distance,s
-STA where,sxf
-LDX where,sxf
-STX column,i
+LDX DLcolumn,i
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+ADDA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
+STX DLcolumn,i
 BR placed
 
 west: NOP0 ;where->column -= distance
-LDX column,i
-STX where,sxf
-LDA where,sxf
-SUBA distance,s
-STA where,sxf
-LDX where,sxf
-STX column,i
+LDX DLcolumn,i
+STX CLmcAwhr,sxf
+LDA CLmcAwhr,sxf
+SUBA CLmcAdis,s
+STA CLmcAwhr,sxf
+LDX CLmcAwhr,sxf
+STX DLcolumn,i
 BR placed
 
 none: NOP0
@@ -634,16 +636,13 @@ BR placed
 
 retry: NOP0
 STRO oops,i
-BR movCoord
+BR CLmvCord
 
 placed: NOP0
-ADDSP mvCoord,i ;deallocating #where #distance #drection
+ADDSP CLmcCleF,i ;deallocating #CLmcAdis #CLmcAdre
 RET0
 ;*****************************************************************
 ;*****************************************************************
-;const int MIN_ROW = 1;
-;const char MIN_COL = 'A';
-;const char GRID_BAD = '?';
 ;***char getSpace(COORDINATE* where, char grid[8][8]);***
   ;{
   ;	if(!validSpace(where)) return GRID_BAD;
@@ -651,29 +650,36 @@ RET0
   ;	int rowIndex = where->row - MIN_ROW;
   ;	return grid[colIndex][rowIndex];
   ;}
-where: .Equate 0 ;local variable #2h
-grid: .Equate 2 ;local array #1c2a
-gtSpace: .Equate 4 ;size of stack of #grid #where
+;///Adresses for Caller///
+CLgsAwhr: .Equate -66 ;formal argument #2d
+CLgsAgrd: .Equate -64 ;Formal argument #1c64a
+CLgsClrF: .Equate 66 ;size of #CLgsAgrd #CLgsAwhr
+;///Local variables and addresses for function as callee///
+CLgsVclI: .Equate 0 ;local variable #2d
+CLgsVrwI: .Equate 2 ;local variable #2d
+CLgsCleF: .Equate 4 ;size of stack of #grid #where
+CLgsPwhr: .Equate 6 ;formal perameter #column #row
+CLgsPgrd: .Equate 9 ;formal perameter #1c64
 
-getSpace: NOP0
-SUBSP gtSpace,i ;allocating #grid #where
-LDX column,i
-STX where,sxf
-LDA where,sxf
+CLgtSpac: NOP0
+SUBSP CLgsCleF,i ;allocating #CLgsVrwI #CLgsVclI
+;if(!validSpace(where)) return GRID_BAD;??
+LDX DLcolumn,i
+STX CLgsPwhr,sxf
+LDA CLgsPwhr,sxf
 SUBA MIN_COL,i
-STA grid,sx ;should be first variable in grid?? And should Store BYTE!
-LDX row,i
-STX where,sxf
-LDA where,sxf
+STBYTEA CLgsPgrd,sx ;should be first variable in grid?? And should Store BYTE!   ;int colIndex = where->column - MIN_COL;
+LDX DLrow,i
+STX CLgsPwhr,sxf
+LDA CLgsPwhr,sxf
 SUBA MIN_ROW ;row is an integer.... column is a character..... ??!!
 LDX 3,i ;Maybe useful in shifting from grid[colIndex] to grid[rowIndex]??
-STA grid,sx ;Should store byte!! STBYTE?
-
-
-ADDSP gtSpace,i ;deallocating #where #grid
+STBYTEA CLgsPgrd,sx ;Should store byte!! STBYTE?  ;int rowIndex = where->row - MIN_ROW;
+LDA CLgsPgrd,s ;return grid[colIndex][rowIndex];
+ADDSP CLgsCleF,i ;deallocating #CLgsVclI #CLgsVrwI
+RET0
 ;****************************************************************
 ;****************************************************************
-;const char BOARD_WATER = '~';
 ;***bool placeShip(int size, COORDINATE* where, char direction, PLAYER* whom);***
   ;{
   ;	int dist;
@@ -702,8 +708,96 @@ ADDSP gtSpace,i ;deallocating #where #grid
   ;	}
   ;	return true; //Success!
   ;}
+;///Adresses for Caller///
+CLpsAsiz: .Equate -8 ;formal arguement #2d
+CLpsAdre: .Equate -6;formal arguement #1c
+CLpsAwhr: .Equate -5 ;formal arguement #2h
+CLpsAwho: .Equate -3 ;formal arguement #2h
+CLspORtV: .Equate -1 ;formal return value #1d
+CLpsClrF: .Equate 8 ;size of #CLpsAsiz #CLpsAdre #CLpsAwhr #CLpsAwho #CLspORtV
+;///Local variables and addresses for function as callee///
+CLpsVdis: .Equate 0 ;local variable #2d
+CLpsVtar: .Equate 2 ;local variable #DLcolumn #DLrow
+CLpsCleF: .Equate 5 ;size of stack of #CLpstarg #CLpsdist
+CLpsPsiz: .Equate 7 ;formal perameter #2d
+CLpsPdre: .Equate 9 ;formal perameter #1c
+CLpsPwhr: .Equate 10 ;formal perameter #2h
+CLpsPwho: .Equate 12 ;formal perameter #2h
+CLpsRetV: .Equate 14 ;formal return value #1d
 
-;const int GAME_NOT_OVER = 0;
+CLplcShp: NOP0
+SUBSP CLpsCleF,i ;allocating #CLpsVtar #CLpsVdis
+SUBSP ;Whatever the Frame for copyCoord it...
+CALL ;Name of CopyCoord...
+ADDSP ;Whatever the Frame for copyCoord it...
+LDA 0,i
+STA CLpsVdis,s ;distance = 0
+BR while
+
+while: NOP0
+LDA CLpsVdis,s
+CPA CLpsPsiz,s
+BRLT if
+BR out
+
+if: NOP0
+;if(getSpace(&target, whom->board) != BOARD_WATER)
+;{
+;        
+;}
+SUBSP CLgsClrF,i ;allocating #CLgsAgrd #CLgsAwhr
+CALL CLgtSpac
+ADDSP CLgsClrF,i ;deallocating #CLgsAwhr #CLgsAgrd
+LDA CLgsVclI,d
+STA CLpsPtar,sx ;&target to column
+LDA CLgsVrwI,d
+LDX 3,i
+STA CLpsAtar,sx ;&target to row
+;not sure about the whom->board thing...
+LDA CLpsAtar,s
+CPA BRD_WTR
+BRNE error
+BR mvCor
+
+error: NOP0
+;Must call error function.... Need SUBSP and ADDSP ...??
+;return error("Could not place ship there\n")
+
+mvCor: NOP0
+SUBSP ClmcClrF,i ;allocating #CLmcAdre #CLmcAdis #CLmcAwhr
+CALL CLmvCord ;moveCoord(&target, 1, direction)
+ADDSP ClmcClrF,i ;allocating #CLmcAwhr #CLmcAdis #CLmcAdre
+LDA CLpsVdis,s
+ADDA 1,d
+LDA CLpsVdis,s ;dist++
+BR while
+
+out: NOP0
+LDA CLpsPsiz,s
+ADDA 1,i
+STA CLpsPsiz,s ;whom->hits += size; ?Add 1 to size??
+LDA 0,i
+STA CLpsVdis,s ;for(dist=0,
+SUBSP ;frame for CopyCoord
+CALL ;Name of CopyCoord (;copyCoord(where, &target);??)
+ADDSP ;frame for CopyCoord
+LDA CLpsVdis,s
+CPA CLpsPsiz,s ;dist<size;
+BRLT setship ;dist++, moveCoord(&target, 1, direction))
+
+setship: NOP0
+SUBSP ;frame of setShip function
+CALL ;name of setShip Function ;setShip(&target, whom);
+ADDSP ;frame of setShip function
+BR end
+
+end: NOP0
+LDBYTEA 1,i
+STBYTEA CLpsRetV ;return true; //Success!
+ADDSP CLpsCleF,i ;deallocating #CLpsVdis #CLpsVtar
+RET0
+;****************************************************************
+;****************************************************************
 ;***void playLoop(PLAYER* plr1, PLAYER* plr2);***
   ;{
   ;	int endGame=GAME_NOT_OVER;
@@ -714,12 +808,38 @@ ADDSP gtSpace,i ;deallocating #where #grid
   ;		endGame = checkGameOver(plr1, plr2);
   ;	}
   ;}
+;///Adresses for Caller///
+CLplApr1: .Equate -12 ;formal argument #DLhit #DLgrid #DLboard
+CLplApr2: .Equate -6 ;formal argument #DLhit #DLgrid #DLboard
+CLplCleF: .Equate 12 ;size of stack of #CLplApr2 #CLplApr1
+;///Local variables and addresses for function as callee///
+CLplEnGm: .Equate 0 ;local variable #2d
+CLplClrF: .Equate 2 ;size of stack of #endGame
+CLplPpr1: .Equate 4 ;formal perameter #DLhit #DLgrid #DLboard
+CLplPpr2: .Equate 9 ;formal perameter #DLhit #DLgrid #DLboard
 
-;const char BOARD_WATER = '~';
-;const char BOARD_SHIP = '#';
-;const char GRID_BAD = '?';
-;const char GRID_HIT = '*';
-;const char GRID_SPLOOSH = '@';
+CLplylop: NOP0
+SUBSP CLplClrF,i ;allocating #CLplEnGm
+LDA GAME_NOT_OVER,d
+STA CLplEnGm,s
+
+start: NOP0
+LDA CLplEnGm,s
+CPA GAME_NOT_OVER,d
+BRNE end
+BR play
+
+play: NOP0
+SUBSP CLplCleF,i ;allocating #CLplPpr2 #CLplPpr1
+CALL extRound ;Needs to change (name)??
+ADDSP CLplCleF,i ;deallocating #CLplPpr1 #CLplPpr2
+BR start
+
+end: NOP0
+ADDSP CLplClrF,i ;deallocating #CLplEnGm
+RET0
+;****************************************************************
+;****************************************************************
 ;***bool checkForHit(COORDINATE* where, PLAYER* whom);***
   ;{
   ;	char actual = getSpace(where, whom->board);
@@ -738,8 +858,67 @@ ADDSP gtSpace,i ;deallocating #where #grid
   ;		return false;
   ;	}
   ;}
+;///Adresses for Caller///
+CLchAwhr: .Equate -10 ;formal argument #DLcolumn #DLrow
+CLchAwho: .Equate -7 ;formal argument #DLhit #DLgrid #DLboard
+CLchORtV: .Equate -1 ;formal argument #1d
+CLchClrF: .Equate 10 ;size of #CLchORtV #CLchAwho #CLchAwhr
+;///Local variables and addresses for function as callee///
+CLchVact: .Equate 0 ;local variable #1c
+CLchCleF: .Equate 1 ;size of #CLchVact
+CLchPwhr: .Equate 3 ;formal perameter #DLcolumn #DLrow
+CLchPply: .Equate 6 ;formal perameter #DLhit #DLgrid #DLboard
+CLchRetV: .Equate 12 ;formal return value
 
+CLCk4Hit: NOP0
+SUBSP CLchCleF,i ;allocating #CLchVact
+SUBSP CLgsClrF ;allocating #CLgsAgrd #CLgsAwhr
+CALL ClgetSpac
+ADDSP CLgsClrF ;deallocating #CLgsAwhr #CLgsAgrd
+LDA CLgsAwhr
+STA CLchVact,s ;char actual = getSpace(where, whom->board);
 
+check: NOP0
+LDA CLchVact,s
+CPA BRD_SHIP,i
+BREQ set ;if(actual == BOARD_SHIP) {
+BR water
+
+set: NOP0
+  ;	setSpace(where, whom->board, GRID_HIT); Call SetSpace??
+  ;	setSpace(where, whom->view, GRID_HIT);  Or just use its addresses for its variables??
+  ;	whom->hits --;
+LDBYTEA 1,i
+STBYTEA CLchRetV ;return true;
+BR end
+
+water: NOP0
+LDA CLchVact,s
+CPA BRD_WTR
+BRNE else ;} else if(actual == BOARD_WATER) {
+SUBSP ;frame for setSpace
+  ;setSpace(where, whom->board, GRID_SPLOOSH); Call SetSpace??
+CALL ;name for SetSpace
+  ;setSpace(where, whom->view, GRID_SPLOOSH);  Or just use its addresses for its variables??
+ADDSP ;frame for setSpace
+LDA 0,i
+STBYTEA CLchRetV  ;	return false;
+BR end
+
+else: NOP0 ;} else {
+SUBSP ;frame for setSpace
+  ;setSpace(where, whom->board, GRID_BAD); Call SetSpace??
+CALL ;name for SetSpace
+  ;setSpace(where, whom->view, GRID_BAD);  Or just use its addresses for its variables??
+ADDSP ;frame for setSpace
+LDBYTEA 0,i
+STBYTEA CLchRetV  ;	return false;
+BR end
+
+end: NOP0
+ADDSP CLchCleF,i ;deallocating #CLchVact
+RET0
+;***************************************************************
 ;--------------LeBerth Stuff ends-----------------
 
 
@@ -774,7 +953,6 @@ main:nop0
 call runGame
 ret0
 
-; Little Stuff ends
 
 setSpace: nop0
 subsp space,i ;allocating #symbol #grid #where
@@ -801,4 +979,10 @@ for2: cpx 8,i
 lda r,i 
 cpa c,i
 brlt   
+
+; Little Stuff ends
+; More Adams Stuff Begins
+
+
 .END
+; More Adams Stuff Ends
