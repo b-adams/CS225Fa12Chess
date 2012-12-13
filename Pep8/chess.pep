@@ -43,22 +43,22 @@ GAM_P2: .equate 2; Game over player 2
 ckgmeova:NOP0
 
 KEwhowin: .equate -2 ;local variable for return value #2d
-plr1: .equate -4 ;local pointer #2h
-plr2: .equate -6 ;local pointer #2h
+plr1: .equate -6 ;local pointer #2h
+plr2: .equate -4 ;local pointer #2h
 KEovaFRM: .equate 6 ;frame for CALLER
 
 ovafrm: .equate 8 ;frame for callee
 whowin: .equate 6 ;return value #2d
 
 
-
+SUBSP ovaframe,i
 ldx plr1,i
-LDA hits,sxf
+LDX hits,sxf
 STA plr1,sxf
 cpa 1,i
 BRLT plr2win
 ldx plr2,i
-LDA hits,sxf
+LDX hits,sxf
 STA plr2,sxf
 cpa 1,i 
 BRLT plr1win
@@ -67,24 +67,64 @@ BR notover,d
          plr2win: NOP0
          LDA GAM_P2,d
          STA KEwhowin,s
+         BR KEendck
 
          plr1win: NOP0
          LDA GAM_P1,d
          STA KEwhowin,s
+         BR KEendck
       
 
          notover: NOP0
          LDA GAM_NT,d
          STA KEwhowin,s
-      
+         BR KEendck
+
+KEendck:NOP0
+ADDSP ovaframe,i
 RET0
 
 ;------------------------------void runGame(void)--------------------------------
 
 runGame: NOP0
-plr1: .equate 0 ;local structure #board #view #hits
-plr2: .equate 2 ;local structure #board #view #hits
+
+KErgXFRM: .equate 0 ;nothing to pass in or out
+player: .equate 0 ;external player argument #2h
+
+KEplr1: .equate 0 ;local structure #board #view #hits
+KEplr2: .equate 2 ;local structure #board #view #hits
 KErungme: .equate 6;frame for local structures
+
+;{
+;	//Players (hits, boards)
+;	PLAYER player1;
+;	PLAYER player2;
+;
+;	printf("\t\tWelcome to Shooting Boats!\n\n\n");
+;
+;	printf("Setting up player 1\n");
+;	setupPlayer(&player1); printf("\n\n\n\n\n\n\n\n");
+;
+;	printf("Setting up player 2\n");
+;	setupPlayer(&player2); printf("\n\n\n\n\n\n\n\n");
+;
+;	printf("\t\tTime to play!\n");
+;
+;	playLoop(&player1, &player2);
+;
+;	printf("\t\tThe game is over!\n");
+;
+;	switch(checkGameOver(&player1, &player2))
+;	{
+;		case GAME_OVER_TIE:
+;			printf("Mutually Assured Destruction!\n"); break;
+;		case GAME_OVER_PLR1_WINS:
+;			printf("Player 1 survives!!\n"); break;
+;		case GAME_OVER_PLR2_WINS:
+;			printf("Player 2 triumphs!\n"); break;
+;		default: printf("The Bermuda Triangle strikes again...");
+;	}
+;}
 
 
 msg1: .ASCII "\t\tWelcome to Shooting Boats!\n\n\n\x00"
@@ -100,28 +140,28 @@ default: .ASCII "The Bermuda Triangle strikes again...\x00"
 
 STRO msg1,d
 STRO msg2,d
-LDX plr1,i ;prepare to access player 1 for setup
-SUBSP plrFRAME,i ;allocating space for call #plr
+;setupPlayer(&player1); printf("\n\n\n\n\n\n\n\n");
+;SUBSP plrFRAME,i ;allocating space for call #plr
 CALL setupPlr 
-ADDSP plrFRAME,i ;deallocating space for call #plr
+;ADDSP plrFRAME,i ;deallocating space for call #plr
 
 STRO msg4,d
 
 STRO msg3,d
-LDX plr2,i ;prepare to access player 2 for setup
-SUBSP plrFRAME,i ;allocating space for call #plr
+;SUBSP plrFRAME,i ;allocating space for call #plr
+;setupPlayer(&player2); printf("\n\n\n\n\n\n\n\n");
 CALL setupPlr
-ADDSP plrFRAME,i ;deallocating space for call #plr
+;ADDSP plrFRAME,i ;deallocating space for call #plr
 
 STRO msg4,d
 
 STRO msg5,d
-SUBSP ;*************dont forget to allocate space
+;SUBSP ;*************dont forget to allocate space
 CALL playLoop
-ADDSP ;*************dont forget to deallocate space
+;ADDSP ;*************dont forget to deallocate space
 STRO msg6,d
 
-SUBSP KEovaFRM,i
+;SUBSP KEovaFRM,i
 LDX KEwhowin,s
 BR KEswitch,x
 
@@ -145,18 +185,49 @@ endCase: RET0
 
 setupPlr: NOP0
 
+;{
+;	COORDINATE target;
+;	char direction;
+;	char ok = 'n';
+;
+;	while(ok=='n')
+;	{
+;
+;		resetPlayer(plr);
+;	
+;		interactivePlaceShip(plr, "Carrier", BOAT_CARRIER);
+;		interactivePlaceShip(plr, "Battleship", BOAT_BATTLESHIP);
+;		interactivePlaceShip(plr, "Destroyer", BOAT_DESTROYER);
+;		interactivePlaceShip(plr, "Submarine", BOAT_SUB);
+;		interactivePlaceShip(plr, "Patrol Boat", BOAT_PT);
+;		
+;		printGrid(plr->board);
+;	
+;		printf("Is this setup ok? [y/n] ");
+;		scanf(" %c", &ok);
+;	}
+;
+;
+;	printf("Done setting up.\n");
+;}
+
 KEdirect: .equate 0 ;local variable #1c
 KEok: .equate 1 ;local variable #1c
 KEtarget: .equate 2 ;local structure #row #column
 setupFR: .equate 5;frame for callee
 
-plr: .equate -2 ;local pointer #2h
+KEplr: .equate -2 ;local pointer #2h
 plrFRAME: .equate 2 ;frame for CALLER
 
 KEokmsg: .ASCII "Is this setup ok? [y/n]\x00"
 
+;	COORDINATE target;
+;	char direction;
+;	char ok = 'n';
+;
+;	while(ok=='n')
 subsp setupFR,i
-while: LDBYTEA KEok,s ;THE WHILE LOOP
+KEwhile: LDBYTEA KEok,s ;THE WHILE LOOP 
 CPA 'n',i
 BREQ endWh
 BR setup
@@ -164,17 +235,17 @@ BR setup
 
 setup: NOP0
 SUBSP KEwhoFRM
-CALL resetPlr ;resetPlater(plr)
+CALL resetPlr ;resetPlater(plr) 
 ADDSP KEwhoFRM
-SUBSP  ;*****************************check
+SUBSP  JBpsXFRM,i
 CALL intPlShp ;Call the interactivePlaceShip
-ADDSP i ;*****************************check
-SUBSP plrFRAME,i ;*****************************check
+ADDSP JBpsXFRM,i
+SUBSP ;*****************************check -N/A
 CALL prntgrid ;Call printGrid(plr->board)
-ADDSP plrFRAME,i ;*****************************check
+ADDSP ;*****************************check -N/A
 STRO KEokmsg,d
 CHARI ok,d
-BR while
+BR KEwhile
 
 endWh: NOP0
 ADDSP setupFR,i
@@ -186,22 +257,44 @@ RET0
 
 resetPlr: NOP0
 
+;void resetPlayer(PLAYER *whom)//int* hits, char board[8][8], char view[8][8])
+;{
+;	whom->hits = 0;
+;	COORDINATE target;
+;	for(int r=0; r<8; r++)
+;	{
+;		for(int c=0; c<8; c++)
+;		{
+;			setCoord(&target, c, r);
+;			setWater(&target, whom);
+;		}
+;	}
+;	
+;}
+
+
 KEwhom: .equate -2 ;local pointer #2h
 KEwhoFRM: .equate 2 ;frame for caller
 
 j: .equate 0 ;local variable #2d
 
+SUBSP KEwhoFRM,i
+SUBSP 2,i ;allocate #j 
+
 LDX hits,i ;whom->hits=0
 LDA 0,i
 STA KEwhom,s
-;SETTING UP FOR LOOP: NEED LOOP WITHIN LOOP
-SUBSP 2,i ;allocate #j 
+
 LDA 0,i
 STA j,s
-CPA 8
+CPA MAX_ROW
 BRGE endFor
+SUBSP KEsetFRM
 Call setCoord
+ADDSP KEsetFRM
+;SUBSP what is this named?
 Call setWater
+;ADDSP what is this named?
 DECO j,s
 CHARO '\n',i
 LDA j,s
@@ -212,6 +305,7 @@ BR for
 endFor: NOP0
 DECO j,s
 CHARO '\n',i
+ADDSP KEwhoFRM,i
 ADDSP 2,i ;deallocate #j
 RET0
 
@@ -227,13 +321,15 @@ r: .equate -4 ;local variable #2d
 KEwhere: .equate -2 ;local structure #column #row
 KEsetFRM: .equate 6 ;frame for CALLER
 
-LDA MIN_COL,d
+LDA MIN_COL,i
 ADDA c,s
-STA column,sxf
+LDX column,i
+STA KEwhere
 
 LDA MIN_ROW,d
 ADDA r,s
-STA row,sxf
+LDX row,i
+STA KEwhere
 
 RET0
 
