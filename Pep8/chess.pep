@@ -53,13 +53,9 @@ whowin: .equate 6 ;return value #2d
 
 SUBSP ovaframe,i
 ldx plr1,i
-LDX hits,sxf
-STA plr1,sxf
 cpa 1,i
 BRLT plr2win
 ldx plr2,i
-LDX hits,sxf
-STA plr2,sxf
 cpa 1,i 
 BRLT plr1win
 BR notover,d
