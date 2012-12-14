@@ -87,8 +87,8 @@ runGame: NOP0
 KErgXFRM: .equate 0 ;nothing to pass in or out
 player: .equate 0 ;external player argument #2h
 
-KEplr1: .equate 0 ;local structure #board #view #hits
-KEplr2: .equate 2 ;local structure #board #view #hits
+KEplr1: .equate 0 ;local structure #DLBoard #DLView #DLHits
+KEplr2: .equate 2 ;local structure #DLBoard #DLView #DLHits
 KErungme: .equate 6;frame for local structures
 
 ;{
@@ -277,7 +277,7 @@ j: .equate 0 ;local variable #2d
 SUBSP KEwhoFRM,i
 SUBSP 2,i ;allocate #j 
 
-LDX hits,i ;whom->hits=0
+LDX DLHits,i ;whom->hits=0
 LDA 0,i
 STA KEwhom,s
 
@@ -379,7 +379,7 @@ intPlShp: NOP0
 ;           END BOOL PLACED = FALSE
 
 ;	printGrid(plr->board)
-           LDX board, i ;using up-to-date name on this
+           LDX DLBoard, i ;using up-to-date name on this
            LDA JBerPpl2, sxf 
            STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
            SUBSP DLpgXFRM, i ;Allocate placeholder amount #grid
@@ -497,7 +497,7 @@ extRound: NOP0
 
 
 	;printGrid(plr2->view)
-           LDX view, i ;using up-to-date name on this
+           LDX DLView, i ;using up-to-date name on this
            LDA JBerPpl2, sxf ;again this might be it and might not be it. I'm still following the translation example pretty closely
            ;LDA JBerPpl2, s
            STA DLpgAgrd, s ;waiting for Dauris to name grid arg of printgrid func.
@@ -543,7 +543,7 @@ extRound: NOP0
             ;END PLR1HITS = CHECKFORHIT(&TARGET, PLR2)
             
 	;printGrid(plr1->view)
-            LDX view, i ;load view into the index
+            LDX DLView, i ;load view into the index
             LDA JBerPpl1, sxf
             STA grid, s ;store PLAYER* player1 to grid
             SUBSP DLpgXFRM, i ;Allocate placeholder amount #gridTBA
@@ -969,14 +969,14 @@ RET0
   ;	}
   ;}
 ;///Adresses for Caller///
-CLplApr1: .Equate -12 ;formal argument #DLhit #DLgrid #DLboard
-CLplApr2: .Equate -6 ;formal argument #DLhit #DLgrid #DLboard
+CLplApr1: .Equate -12 ;formal argument #DLhit #DLgrid #DLBoard
+CLplApr2: .Equate -6 ;formal argument #DLhit #DLgrid #DLBoard
 CLplCleF: .Equate 12 ;size of stack of #CLplApr2 #CLplApr1
 ;///Local variables and addresses for function as callee///
 CLplEnGm: .Equate 0 ;local variable #2d
 CLplClrF: .Equate 2 ;size of stack of #endGame
-CLplPpr1: .Equate 4 ;formal perameter #DLhit #DLgrid #DLboard
-CLplPpr2: .Equate 9 ;formal perameter #DLhit #DLgrid #DLboard
+CLplPpr1: .Equate 4 ;formal perameter #DLhit #DLgrid #DLBoard
+CLplPpr2: .Equate 9 ;formal perameter #DLhit #DLgrid #DLBoard
 
 CLplylop: NOP0
 SUBSP CLplClrF,i ;allocating #CLplEnGm
@@ -1020,14 +1020,14 @@ RET0
   ;}
 ;///Adresses for Caller///
 CLchAwhr: .Equate -10 ;formal argument #DLcolumn #DLrow
-CLchAwho: .Equate -7 ;formal argument #DLhit #DLgrid #DLboard
+CLchAwho: .Equate -7 ;formal argument #DLhit #DLgrid #DLBoard
 CLchORtV: .Equate -1 ;formal argument #1d
 CLchClrF: .Equate 10 ;size of #CLchORtV #CLchAwho #CLchAwhr
 ;///Local variables and addresses for function as callee///
 CLchVact: .Equate 0 ;local variable #1c
 CLchCleF: .Equate 1 ;size of #CLchVact
 CLchPwhr: .Equate 3 ;formal perameter #DLcolumn #DLrow
-CLchPply: .Equate 6 ;formal perameter #DLhit #DLgrid #DLboard
+CLchPply: .Equate 6 ;formal perameter #DLhit #DLgrid #DLBoard
 CLchRetV: .Equate 12 ;formal return value
 
 CLCk4Hit: NOP0
@@ -1093,7 +1093,7 @@ DLCord:     .equate 3   ;size of #DLcolumn #DLrow
 DLBoard:    .equate 0   ;struct field #2h
 DLView:     .equate 2   ;struct field #2h
 DLHits:     .equate 4   ;struct field #2d
-DPlayer:    .equate 6   ;size of #board #view #hits
+DPlayer:    .equate 6   ;size of #DLBoard #DLView #DLHits
 
 ;void printCoord
 DLWhere:    .equate 0   ;local variable #2h
