@@ -209,7 +209,7 @@ setupPlr: NOP0
 
 KEdirect: .equate 0 ;local variable #1c
 KEok: .equate 1 ;local variable #1c
-KEtarget: .equate 2 ;local structure #row #column
+KEtarget: .equate 2 ;local structure #DLrow #DLcolumn
 setupFR: .equate 5;frame for callee
 
 KEplr: .equate -2 ;local pointer #2h
@@ -314,17 +314,17 @@ setCoord: NOP0
 ;where->row=r+MIN_ROW;
 c: .equate -6 ;local variable #2d
 r: .equate -4 ;local variable #2d
-KEwhere: .equate -2 ;local structure #column #row
+KEwhere: .equate -2 ;local structure #DLcolumn #DLrow
 KEsetFRM: .equate 6 ;frame for CALLER
 
 LDA MIN_COL,i
 ADDA c,s
-LDX column,i
+LDX DLcolumn,i
 STA KEwhere
 
 LDA MIN_ROW,d
 ADDA r,s
-LDX row,i
+LDX DLrow,i
 STA KEwhere
 
 RET0
@@ -344,7 +344,7 @@ JBpsVdir: .equate  1 ;char direction ;local variable #1c
 ;JBpsVsze: .equate 2 ; int size ;local variable #2d ; I don't actually see this declared, but I'm gonna' use it, so do I declare this or not?
 ;because size is going to come from one of Kyle's Constants, but what ultimately points to them or calls them here? I might figure this out once I get further.
 ;Oh wait...it's not a variable at all. It's a parameter.
-JBpsVtrg: .equate 4 ;COORDINATE target ;local structure #row #col
+JBpsVtrg: .equate 4 ;COORDINATE target ;local structure #DLrow #col
 ;(Frame = [42] + 2 = 44)
 
 ;DETERMINE FORMAL PARAMETERS AND (CALLEE) NAMES
@@ -460,7 +460,7 @@ JBerVp2h: .equate 1 ;bool plr2hits ;local variable #1h ;check the trace tags
 ;not sure if I gave myself enough space for bools or what we're using for them
 ;but my instinct tells me that it's best to keep bools at 1 byte (1 nyyble would be nicer if we could load it)
 ;I need to figure out a more clever way to work with bools
-JBerVtrg: .equate 3 ;COORDINATE target ;local structure #row #col
+JBerVtrg: .equate 3 ;COORDINATE target ;local structure #DLrow #col
 ;for some reason the translation example tells me that COORDINATE is 42 bytes
 ;that means that there are 44 bytes in this frame theoretically, yes?
 
@@ -691,14 +691,14 @@ JBccPcpy: .equate 2 ;local parameter; arg COORDINATE* copy #2h
 cpyCoord: NOP0 
 ;{
 ;	copy->column = original->column;
-           LDX column, i
+           LDX DLcolumn, i
            LDA JBccPorg, sxf ;original -> column  ; (backwards notation) column <- original
-;          LDX column, i     ;commented out because I now believe this line is redundant ;codesize: - 3 bytes
+;          LDX DLcolumn, i     ;commented out because I now believe this line is redundant ;codesize: - 3 bytes
            STA JBccPcpy, sxf ;copy -> original =  ; (backwards notation) = original <- copy
 ;	copy->row = original->row;
-           LDX row, i
+           LDX DLrow, i
            LDA JBccPorg, sxf ;original -> row ;(B.W.Notation): row <- original
-;          LDX row, i ;come to think of it row should already be in the index ;Pretty sure this line is redundant codesize: -3 (more) bytes
+;          LDX DLrow, i ;come to think of it row should already be in the index ;Pretty sure this line is redundant codesize: -3 (more) bytes
            STA JBccPcpy, sxf
 ;}
 RET0
@@ -818,7 +818,7 @@ CLgsClrF: .Equate 66 ;size of #CLgsAgrd #CLgsAwhr
 CLgsVclI: .Equate 0 ;local variable #2d
 CLgsVrwI: .Equate 2 ;local variable #2d
 CLgsCleF: .Equate 4 ;size of stack of #grid #where
-CLgsPwhr: .Equate 6 ;formal perameter #column #row
+CLgsPwhr: .Equate 6 ;formal perameter #DLcolumn #DLrow
 CLgsPgrd: .Equate 9 ;formal perameter #1c64
 
 CLgtSpac: NOP0
@@ -1087,7 +1087,7 @@ RET0
 ;typedef struct Coordinate
 DLcolumn:   .equate 0   ;struct field #1c
 DLrow:      .equate 1   ;struct field #2d
-DLCord:     .equate 3   ;size of #column #row
+DLCord:     .equate 3   ;size of #DLcolumn #DLrow
 
 ;typedef struct Playes
 DLBoard:    .equate 0   ;struct field #2h
