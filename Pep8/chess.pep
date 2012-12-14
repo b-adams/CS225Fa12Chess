@@ -1117,13 +1117,10 @@ main:nop0
 call runGame
 ret0
 
-<<<<<<< HEAD
 ;;;          void printCoord(COORDINATE* where)//Dauris
 ;{
 ; printf("[%c%d]", where->column, where->row);
 ;}
-=======
->>>>>>> upstream/master
 
 DLPrCord: nop0
 subsp DLPrCord
